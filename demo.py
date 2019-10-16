@@ -49,12 +49,12 @@ if __name__ == '__main__':
         style_img_file = './style_image/style01.jpg'
 
         try:
-            # generate a charactor
-            print('generating the charactor ......')
+            # generate a character
+            print('generating the character ......')
             cgan.generate_one_image(topk_idx[5:], result_path=charactor_file)
 
             # resize and denoise
-            print('resizing and denoising the charactor ......')
+            print('resizing and denoising the character ......')
             resize_and_denoise(charactor_file, (1200, 1200), resized_file)
 
             # change style_image_path to generate different style!
