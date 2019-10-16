@@ -1,0 +1,9 @@
+tensorflow>=2.0.0
+pillow
+matplotlib
+opencv-python
+imageio
+tensorflow_hub
+flask
+flask-restful
+bert-serving-client
