@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from model import CGAN
 from denoise import *
 import os
@@ -32,5 +33,6 @@ if __name__ == '__main__':
         try:
             cgan.generate_one_image(topk_idx[5:], result_path='./result/%s.png' % time_now)
             resize_and_denoise('./result/%s.png' % time_now, (1200, 1200), './result/%s_convert.png' % time_now)
+            print('result generated, please check the result folder')
         except Exception as e:
             print(e)
