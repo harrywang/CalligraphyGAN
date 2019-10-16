@@ -272,13 +272,4 @@ class CGAN:
                                                            minval=-1.0, maxval=1.0)
 
         sample_images = self.generator(const_random_vector_for_saving, sample_condition, training=False)
-        # print_or_save_sample_images(sample_images.numpy(), 1,
-        #                             is_square=True, is_save=True, epoch=9999,
-        #                             checkpoint_dir='./result')
         save_one_sample_image(sample_images.numpy(), result_path=result_path)
-
-
-if __name__ == '__main__':
-    cgan = CGAN()
-    cgan.reload('./ckpt')
-    cgan.generate_one_image('')

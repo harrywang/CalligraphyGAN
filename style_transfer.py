@@ -75,8 +75,6 @@ class Stylizer:
     def transfer(self, style_image_path, content_image_path, output_size, result_path):
         # Load example images
 
-        # style_image_url = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/The_Great_Wave_off_Kanagawa.jpg'
-        style_image_url = 'http://sip.csjh.tp.edu.tw/sites/art/DocLib6/%E6%8A%BD%E8%B1%A1%E7%95%AB%E7%B7%B4%E7%BF%92/%E6%8A%BD%E8%B1%A11.jpg'
         output_image_size = output_size
 
         # The content image size can be arbitrary.
@@ -85,12 +83,15 @@ class Stylizer:
         # recommended image size for the style image (though, other sizes work as
         # well but will lead to different results).
         style_img_size = (256, 256)  # Recommended to keep it at 256.
-        # content_image = load_image(content_image_url, content_img_size)
 
-        style_image = self.load_image(style_image_url, style_img_size)
-        # print(style_image.shape)
+        try:
+            style_image = self.import_image(style_image_path, style_img_size)
+        except Exception as e:
+            print(e)
+            style_image_url = 'http://sip.csjh.tp.edu.tw/sites/art/DocLib6/%E6%8A%BD%E8%B1%A1%E7%95%AB%E7%B7%B4%E7%BF%92/%E6%8A%BD%E8%B1%A11.jpg'
+            style_image = self.load_image(style_image_url, style_img_size)
+
         content_image = self.import_image(content_image_path, content_img_size)
-        # print(content_image.shape)
         style_image = tf.nn.avg_pool(style_image, ksize=[3, 3], strides=[1, 1], padding='SAME')
         # show_n([content_image, style_image], ['Content image', 'Style image'])
 
@@ -104,11 +105,6 @@ class Stylizer:
         stylized_image *= 255
         img = Image.fromarray(stylized_image.astype(np.uint8))
         img.save(result_path)
-
-        # Visualize input images and the generated stylized image.
-
-        # show_n([content_image, style_image, stylized_image],
-        #        titles=['Original content image', 'Style image', 'Stylized image'])
 
 
 if __name__ == '__main__':

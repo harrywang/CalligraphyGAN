@@ -103,9 +103,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# style_image
-style_image/
-
 # result
 result/
 
