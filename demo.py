@@ -3,8 +3,11 @@ from model import CGAN
 from denoise import *
 import os
 from bert_client import BertClientQuery
+from style_transfer import Stylizer
 import datetime
 import time
+import platform
+import subprocess
 
 
 words = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
@@ -18,21 +21,55 @@ words = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
         '立', '章', '老', '臣', '良', '莫', '虎', '衣', '西', '起',
         '足', '身', '通', '遂', '重', '陵', '雨', '高', '黄', '鼎']
 
+
+def open_file(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
+
+
 if __name__ == '__main__':
     bcq = BertClientQuery(words, topk=10)
 
     cgan = CGAN()
     cgan.reload('./ckpt')
+    stylizer = Stylizer()
 
     while True:
-        query = input('Your query: ')
+        query = input('Enter the dish name: ')
         topk_idx = bcq.query(query)
 
         time_now = str(int(time.time()))
+        charactor_file = './result/%s.png' % time_now
+        resized_file = './result/%s_convert.png' % time_now
+        styled_file = './result/%s_stylized.png' % time_now
+        style_img_file = './style_image/style01.jpg'
 
         try:
-            cgan.generate_one_image(topk_idx[5:], result_path='./result/%s.png' % time_now)
-            resize_and_denoise('./result/%s.png' % time_now, (1200, 1200), './result/%s_convert.png' % time_now)
-            print('result generated, please check the result folder')
+            # generate a charactor
+            print('generating the charactor ......')
+            cgan.generate_one_image(topk_idx[5:], result_path=charactor_file)
+
+            # resize and denoise
+            print('resizing and denoising the charactor ......')
+            resize_and_denoise(charactor_file, (1200, 1200), resized_file)
+
+            # change style_image_path to generate different style!
+            # if something wrong with style_image_path, it will use default style image
+            print('applying style transfer ......')
+            stylizer.transfer(style_image_path=style_img_file,
+                                   content_image_path=resized_file,
+                                   output_size=1200,
+                                   result_path=styled_file
+                                   )
+            print('Done! Please check the files in the result folder')
+
+            # open the generated files
+            open_file(resized_file)
+            open_file(styled_file)
+
         except Exception as e:
-            print(e)
+                        print(e)
