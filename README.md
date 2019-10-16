@@ -24,12 +24,12 @@ mkdir result
 mkdir ckpt
 python api.py
 ```
-### Test
+## Test
 If anything goes right, now this API is served at localhost:5000, you can use Postman to test the API as follows:  
 Add `form-data`(in `Body`)as showed in picture, and post.  
-![image](http://github.com/zhuojg1519/ai-recepit-art/raw/master/example/postman.png)
+![image](https://i.ibb.co/b7rTtcp/postman.png)
 * Finally you will get response with 2 fake urls, one for original image, one for stylized image.
-* The result is stored in `ai-recepit-art/result`
-Here are some result:  
-![image](http://github.com/zhuojg1519/ai-recepit-art/raw/master/example/result1.png)
-![image](http://github.com/zhuojg1519/ai-recepit-art/raw/master/example/result1_stylized.png)
+* The result is stored in `ai-recepit-art/result`.  
+* Here are some result:  
+<div align=center><img width="200" height="200" src="https://i.ibb.co/DD3cjtY/result1.png" alt="original"/></div>
+<div align=center><img width="200" height="200" src="https://i.ibb.co/pyr7NYB/result1-stylized.png" alt="stylized"/></div>
