@@ -114,3 +114,5 @@ ckpt/
 
 # PyCharm
 .idea/
+
+.DS_store
