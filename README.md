@@ -39,15 +39,26 @@ Make sure you are in the ai-recepit-art folder and virtual environment is activa
 
 ```
 (venv) dami:ai-recepit-art harrywang$ python demo.py
-2019-10-16 14:19:37.282856: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
-2019-10-16 14:19:37.314537: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x7f852fdcbd50 executing computations on platform Host. Devices:
-2019-10-16 14:19:37.314559: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
-Enter the dish name: 西红柿鸡蛋
-generating the character ......
-resizing and denoising the character ......
-applying style transfer ......
-Done! Please check the files in the result folder
+initializing ......
+2019-10-16 16:06:54.619176: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-10-16 16:06:54.645629: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x7ff14eaea0a0 executing computations on platform Host. Devices:
+2019-10-16 16:06:54.645649: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
+Enter dish name - [default:红烧肉卤鸡蛋]:
+generating the character...
+resizing and denoising the character...
+[?] Choose a style:: Rousseau
+   Picasso
+   Pollock
+ > Rousseau
+   Rothko
+   deKooning
+
+applying style transfer...
+Finishing up...
 ```
+Sample outputs:
+![1571256428_final](https://user-images.githubusercontent.com/595772/66955036-970f4400-f02f-11e9-85b2-16e2d018aeab.jpg)
+![1571256477_final](https://user-images.githubusercontent.com/595772/66955039-98407100-f02f-11e9-8469-83b93f6c9164.jpg)
 
 ## Run and test the API
 Run `python api.py` to start a Flask dev server to serve the API at localhost:5000, you can use Postman to test the API as follows:  

@@ -88,7 +88,7 @@ class Stylizer:
             style_image = self.import_image(style_image_path, style_img_size)
         except Exception as e:
             print(e)
-            style_image_url = 'http://sip.csjh.tp.edu.tw/sites/art/DocLib6/%E6%8A%BD%E8%B1%A1%E7%95%AB%E7%B7%B4%E7%BF%92/%E6%8A%BD%E8%B1%A11.jpg'
+            style_image_url = 'https://user-images.githubusercontent.com/595772/66951165-cc179880-f027-11e9-8e46-407defc5c2a4.jpg'
             style_image = self.load_image(style_image_url, style_img_size)
 
         content_image = self.import_image(content_image_path, content_img_size)
