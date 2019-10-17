@@ -50,6 +50,7 @@ if __name__ == '__main__':
             query = "红烧肉卤鸡蛋"
 
         topk_idx = bcq.query(query)
+        print(topk_idx)
 
         time_now = str(int(time.time()))
         charactor_file = './result/%s.png' % time_now
@@ -65,7 +66,13 @@ if __name__ == '__main__':
 
             # resize and denoise
             print('resizing and denoising the character...')
+
+            #resize(charactor_file, (1200, 1200), resized_file)
+
+            # denoising will change the style transfer effect to the background
             resize_and_denoise(charactor_file, (1200, 1200), resized_file)
+
+
 
             # change style_image_path to generate different style!
             # if something wrong with style_image_path, it will use default style image
