@@ -23,3 +23,10 @@ def resize_and_denoise(img_path, result_size, dst_path):
     dst = cv2.fastNlMeansDenoisingColored(img, None, 100, 100, 11, 27)
     cv2.imwrite(dst_path, dst)
     denoise_by_value(255./2, dst_path, dst_path)
+
+
+def resize(img_path, result_size, dst_path):
+    img = cv2.imread(img_path)
+    img = cv2.resize(img, result_size, interpolation=cv2.INTER_AREA)
+    new_img = Image.fromarray(np.array(img, dtype=np.uint8))
+    new_img.save(dst_path)

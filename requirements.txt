@@ -7,3 +7,4 @@ tensorflow_hub
 flask
 flask-restful
 bert-serving-client
+inquirer
