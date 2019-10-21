@@ -113,3 +113,6 @@ ckpt/
 .idea/
 
 .DS_store
+
+# results for web demo
+static/tmp/
