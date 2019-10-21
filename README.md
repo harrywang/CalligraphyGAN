@@ -49,7 +49,7 @@ resizing and denoising the character...
 [?] Choose a style:: Rousseau
    Picasso
    Pollock
- > Rousseau
+  Rousseau
    Rothko
    deKooning
 
@@ -69,3 +69,13 @@ Add `form-data`(in `Body`)as showed in picture, and post.
 * Here are some results:  
 <div align=center><img width="200" height="200" src="https://i.ibb.co/DD3cjtY/result1.png" alt="original"/></div>
 <div align=center><img width="200" height="200" src="https://i.ibb.co/pyr7NYB/result1-stylized.png" alt="stylized"/></div>
+
+## Web Demo
+Besides API, you can also run generator as web demo.
+* Make sure Bert is running, you are in directory of ai-recepit-art, you have installed all the requirements and you have downloaded checkpoints.  
+```shell script
+mkdir static
+python gui_demo.py
+```
+Now you can visit localhost:5000 to enjoy the magic of generator.  
+<div align=center><img width="500" src="https://i.ibb.co/jM2zw62/2019-10-21-230813.png" /></div>
