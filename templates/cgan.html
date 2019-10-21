@@ -1,0 +1,20 @@
+<!doctype html>
+<title>CGAN Calligraphy</title>
+<h1>
+  CGAN Calligraphy
+</h1>
+<p>Enter a simple description and click submit. Wait for about 60 seconds, and you will get result.</p>
+<br>
+<div>
+  <form method="post" action="/">
+    Description:
+    <input type="text" name="description"><br>
+    <input type="submit" value="Submit">
+  </form>
+</div>
+{% if url_1 and url_2 %}
+  <h2>Generated Image:</h2>
+  <img width="300px" src="{{url_1}}">
+  <h2>Stylized Image:</h2>
+  <img width="300px" src="{{url_2}}">
+{% endif %}
