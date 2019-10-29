@@ -1,8 +1,13 @@
 from flask import Flask, escape, request, flash, render_template, url_for
 from ai_menu import AIMenu
+import os
+
+if not os.path.exists('./static/tmp'):
+    os.makedirs('./static/tmp')
 
 app = Flask(__name__)
-ai_menu = AIMenu(result_path='./static', topk=10)
+ai_menu = AIMenu(result_path='./static/tmp', topk=10)
+print('go to http://localhost:5000 to see the demo')
 
 
 @app.route('/', methods=['GET', 'POST'])

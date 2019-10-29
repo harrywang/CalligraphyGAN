@@ -6,7 +6,7 @@ import time
 
 
 class AIMenu:
-    def __init__(self, result_path='./reuslt', topk=10):
+    def __init__(self, result_path='./static/tmp', topk=10):
         words = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
                  '侯', '元', '光', '利', '印', '去', '受', '右', '司', '合',
                  '名', '周', '命', '和', '唯', '堂', '士', '多', '夜', '奉',
@@ -40,7 +40,7 @@ class AIMenu:
 
         # change style_image_path to generate different style!
         # if something wrong with style_image_path, it will use default style image
-        self.stylizer.transfer(style_image_path='./style_image/style01.jpg',
+        self.stylizer.transfer(style_image_path='./style_image/dekooning.jpg',
                                content_image_path='%s/%s_convert.png' % (self.result_path, time_now),
                                output_size=1200,
                                result_path='%s/%s_stylized.png' % (self.result_path, time_now)
