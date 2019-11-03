@@ -24,6 +24,10 @@ You can change the parameters of function `load` and `r` to change the original 
     2. **target_color**  
     Set the target color of the generated image. It should be a BGR color list and value for each channel should be between 0 and 1.  
     For example, it can be `[[0, 1, 1], [0.6, 1, 0.5]]`. And the program will randomly pick colors to generate strokes.  
-    By default it it `None`.
+    By default it is `None`.
     3. **random_color**  
     When `target_color` is `None`, program will use original color of image or pick colors randomly if this parameter is set to `True`.
+
+## Example
+Here is an example, I set target_color to [[1, 0, 0], [0, 1, 1], [1, 0, 1]] and run for 20 epoch.
+![Example](95_0016.png)
