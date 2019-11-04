@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 import math
 import random
-import os
 
 
 def rn():
@@ -13,12 +12,17 @@ brushes = {}
 
 
 # load brushes from ./brushes directory
-def load_brushes(brush_dir='./brushes/'):
+def load_brushes():
+    brush_dir = './brushes/'
+    import os
     for fn in os.listdir(brush_dir):
         if os.path.isfile(brush_dir + fn):
             brush = cv2.imread(brush_dir + fn, 0)
-            if brush is not None:
+            if not brush is None:
                 brushes[fn] = brush
+
+
+load_brushes()
 
 
 def get_brush(key='random'):
@@ -347,19 +351,15 @@ def compose(orig, brush, x, y, rad, srad, angle, color, usefloat=False, useoil=F
         # if canvas lock provided, release it. this prevents overwrite problems
 
 
-if __name__ == '__main__':
-    print('testing the brush rotation...')
-    only_float = False
-    only_oil = True
-    load_brushes()
-    flower = cv2.imread('demo.png')
-    if not only_float:
+def test(onlyfloat=False, onlyoil=False):
+    flower = cv2.imread('flower.jpg')
+    if not onlyfloat:
         fint = flower.copy()
         for i in range(100):
             brush, key = get_brush()
             color = [rn() * 255, rn() * 255, rn() * 255]
 
-            if not only_oil:
+            if not onlyoil:
                 print('integer no oil')
                 compose(fint, brush, x=rn() * flower.shape[1], y=rn() * flower.shape[0],
                         rad=50, srad=10 + 20 * rn(), angle=rn() * 360, color=color, useoil=False)
@@ -376,7 +376,7 @@ if __name__ == '__main__':
         brush, key = get_brush()
         color = [rn(), rn(), rn()]
 
-        if not only_oil:
+        if not onlyoil:
             print('float no oil')
             compose(floaty, brush, x=rn() * flower.shape[1], y=rn() * flower.shape[0],
                     rad=50, srad=10 + 20 * rn(), angle=rn() * 360, color=color, usefloat=True, useoil=False)
