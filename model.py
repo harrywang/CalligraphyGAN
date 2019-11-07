@@ -273,3 +273,51 @@ class CGAN:
 
         sample_images = self.generator(const_random_vector_for_saving, sample_condition, training=False)
         save_one_sample_image(sample_images.numpy(), result_path=result_path)
+
+    def generate_gif(self, vector, result_dir):
+        sample_condition = np.zeros(100).tolist()
+        const_random_vector_for_saving = tf.random.uniform([1, 1, 1, noise_dim],
+                                                           minval=-1.0, maxval=1.0)
+
+        if not os.path.exists(result_dir):
+            os.mkdir(result_dir)
+
+        for j in vector:
+            try:
+                sample_condition[j] = 1.
+            except Exception as e:
+                sample_condition[0] = 1.
+
+        for j in range(len(vector), 4, -1):
+            try:
+                sample_condition[vector[j]] = 0.
+            except Exception as e:
+                sample_condition[0] = 0.
+
+            sample_condition_ = np.array(sample_condition, dtype=np.float32)
+            sample_condition_ = tf.reshape(sample_condition_, [1, 1, 1, num_classes])
+            sample_images = self.generator(const_random_vector_for_saving, sample_condition_, training=False)
+            save_one_sample_image(sample_images.numpy(), result_path=os.path.join(result_dir, '%d.png' % j))
+
+        # with imageio.get_writer(os.path.join(result_dir, 'result.gif'), mode='I') as writer:
+        #     last = -1
+        #     for i, j in enumerate(range(len(vector), 4, -1)):
+        #         frame = 2 * (i**0.5)
+        #         if round(frame) > round(last):
+        #             last = frame
+        #         else:
+        #             continue
+        #
+        #         image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
+        #         writer.append_data(image)
+        #
+        #     last = -1
+        #     for i, j in enumerate(range(5, len(vector))):
+        #         frame = 2 * (i**0.5)
+        #         if round(frame) > round(last):
+        #             last = frame
+        #         else:
+        #             continue
+        #
+        #         image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
+        #         writer.append_data(image)
