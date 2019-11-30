@@ -7,11 +7,8 @@ generate_target_word('且', checkpoint_dir='../', result_dir='./且', size=5)
 * Calculate FID Matrix for word_list
 ---
 There is an example - `evaluation/fid_calculation.py`.  
-<<<<<<< HEAD
-Run this file, notice that you should in the folder `evaluation`
-=======
 Run this file by, notice that you should in the folder `evaluation`
->>>>>>> 572c8cdea85ba589b18ca43e812747cea0f75ba2
+Run this file by, notice that you should in the folder `evaluation`
 ```shell script
 python fid_calculation.py
 ```
