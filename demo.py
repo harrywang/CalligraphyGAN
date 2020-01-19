@@ -57,16 +57,15 @@ if __name__ == '__main__':
             # generate a character
 
             # TODO: inquirer is not supported on Windows
-            # styles = [
-            #     inquirer.List('style',
-            #                   message="Choose a style:",
-            #                   choices=['Picasso', 'Pollock', 'Rousseau', 'Rothko', 'deKooning'],
-            #                   ),
-            # ]
+            styles = [
+                inquirer.List('style',
+                              message="Choose a style:",
+                              choices=['Picasso', 'Pollock', 'Rousseau', 'Rothko', 'deKooning'],
+                              ),
+            ]
 
-            # chosen_style = inquirer.prompt(styles)
-            # style_img_file = './style_image/%s.jpg' % chosen_style['style'].lower()
-            style_img_file = './style_image/Pollock.jpg'
+            chosen_style = inquirer.prompt(styles)
+            style_img_file = './style_image/%s.jpg' % chosen_style['style'].lower()
 
             img, resized_img, denoised_img, stylized_img = menu.generate(query, style_img_file=style_img_file)
 
@@ -119,17 +118,17 @@ if __name__ == '__main__':
             new_im.save(final_output_file, "JPEG", quality=80, optimize=True, progressive=True)
 
             # TODO: inquirer is not supported on Windows
-            # try_again_prompt = [
-            #     inquirer.List('try',
-            #                   message="Try again?",
-            #                   choices=['Yes', 'No'],
-            #                   ),
-            # ]
+            try_again_prompt = [
+                inquirer.List('try',
+                              message="Try again?",
+                              choices=['Yes', 'No'],
+                              ),
+            ]
 
-            # answer = inquirer.prompt(try_again_prompt)
-            # if answer['try'] == "No":
-            #     print('bye!!')
-            #     break
+            answer = inquirer.prompt(try_again_prompt)
+            if answer['try'] == "No":
+                print('bye!!')
+                break
 
         except Exception as e:
             print(e)

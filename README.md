@@ -1,5 +1,22 @@
 # Art Generation based on Receipt Data
 
+## Introduction
+This is the implementation of *Taming Generative Modeling and Natural Language Processing for Creative Customer Engagement*.  
+This is a creative framework based on Conditional Generative Adversarial Networks and Contextual Neural Language Model to generate artworks that have intrinsic meaning and aesthetic value.  
+Input a dish name or description in Chinese, and we can get a image representing these Chinese characters.  
+The whole framework is composed of 3 parts -- **Bert, CGAN and Oil Painting**.
+### Dataset
+We use 100 Chinese characters to test our framework.
+### Bert
+https://github.com/hanxiao/bert-as-service  
+In this part, we developed a simple algorithm based on BERT to map the input text with arbitrary number of characters into five characters from the 100 characters.
+### CGAN
+In this part, we use 100 Chinese characters as training data to train a Conditional GAN.
+### Oil Painting
+https://github.com/ctmakro/opencv_playground  
+In this part, we convert generated image into oil painting.
+
+
 ## Setup
 You need to create 2 virtual environment to run this project, one for Bert Server, one for Generator.
 ### Setup Bert Server
@@ -56,9 +73,8 @@ resizing and denoising the character...
 applying style transfer...
 Finishing up...
 ```
-Sample outputs:
-![1571256428_final](https://user-images.githubusercontent.com/595772/66955036-970f4400-f02f-11e9-85b2-16e2d018aeab.jpg)
-![1571256477_final](https://user-images.githubusercontent.com/595772/66955039-98407100-f02f-11e9-8469-83b93f6c9164.jpg)
+Sample outputs:  
+![1579404347_final](https://ibb.co/yfCyqLG)
 
 ## Run and test the API
 Run `python api.py` to start a Flask dev server to serve the API at localhost:5000, you can use Postman to test the API as follows:  
@@ -78,4 +94,4 @@ mkdir static
 python gui_demo.py
 ```
 Now you can visit localhost:5000 to enjoy the magic of generator.  
-<div align=center><img width="500" src="https://i.ibb.co/jM2zw62/2019-10-21-230813.png" /></div>
+<div align=center><img width="500" src="https://ibb.co/j3QnVwG" /></div>
