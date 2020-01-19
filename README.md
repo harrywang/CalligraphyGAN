@@ -85,12 +85,12 @@ applying style transfer...
 Finishing up...
 ```
 Sample outputs. They are GAN result, result after noise reduction, result after oil painting,
-result after style transfer and style image respectively.
+result after style transfer and style image respectively.  
 ![1579404347_final](https://i.ibb.co/ZLr8xyt/1579404347-final.jpg)
 
 ## Run and test the API
 Run `python api.py` to start a Flask dev server to serve the API at localhost:5000, you can use Postman to test the API as follows:  
-Add `form-data`(in `Body`)as showed in picture, and post.  
+Add `params` as showed in picture (or add parameters using form-data), and post.  
 ![api_test](https://i.ibb.co/qsxrrsZ/api-test.png)
 * Finally you will get response with 2 fake urls, one for original image, one for stylized image.
 * The result is stored in `ai-recepit-art/result`.  
