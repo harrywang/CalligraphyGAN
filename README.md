@@ -2,18 +2,29 @@
 
 ## Introduction
 This is the implementation of *Taming Generative Modeling and Natural Language Processing for Creative Customer Engagement*.  
+  
 This is a creative framework based on Conditional Generative Adversarial Networks and Contextual Neural Language Model to generate artworks that have intrinsic meaning and aesthetic value.  
+  
 Input a dish name or description in Chinese, and we can get a image representing these Chinese characters.  
-The whole framework is composed of 3 parts -- **Bert, CGAN and Oil Painting**.
+  
+The whole framework is composed of 3 parts -- **Bert**, **CGAN** and **Oil Painting**.
+
 ### Dataset
-We use 100 Chinese characters to test our framework.
+We use 100 Chinese characters to test our framework.  
+  
+Examples from the dataset (Chinese character 好):  
+![dataset_sample](https://i.ibb.co/HBNy5T7/dataset-sample.png)
 ### Bert
-https://github.com/hanxiao/bert-as-service  
+>Inspired by https://github.com/hanxiao/bert-as-service  
+
 In this part, we developed a simple algorithm based on BERT to map the input text with arbitrary number of characters into five characters from the 100 characters.
 ### CGAN
-In this part, we use 100 Chinese characters as training data to train a Conditional GAN.
+In this part, we use 100 Chinese characters as training data to train a generator.  
+This generator take a 100-dimensional vector as input, 
+and each dimension in this vector represents the weight of each Chinese character in the data set.
 ### Oil Painting
-https://github.com/ctmakro/opencv_playground  
+>Inspired by https://github.com/ctmakro/opencv_playground  
+
 In this part, we convert generated image into oil painting.
 
 
@@ -73,18 +84,19 @@ resizing and denoising the character...
 applying style transfer...
 Finishing up...
 ```
-Sample outputs:  
-![1579404347_final](https://ibb.co/yfCyqLG)
+Sample outputs. They are GAN result, result after noise reduction, result after oil painting,
+result after style transfer and style image respectively.
+![1579404347_final](https://i.ibb.co/ZLr8xyt/1579404347-final.jpg)
 
 ## Run and test the API
 Run `python api.py` to start a Flask dev server to serve the API at localhost:5000, you can use Postman to test the API as follows:  
 Add `form-data`(in `Body`)as showed in picture, and post.  
-![image](https://i.ibb.co/b7rTtcp/postman.png)
+![api_test](https://i.ibb.co/qsxrrsZ/api-test.png)
 * Finally you will get response with 2 fake urls, one for original image, one for stylized image.
 * The result is stored in `ai-recepit-art/result`.  
 * Here are some results:  
-<div align=center><img width="200" height="200" src="https://i.ibb.co/DD3cjtY/result1.png" alt="original"/></div>
-<div align=center><img width="200" height="200" src="https://i.ibb.co/pyr7NYB/result1-stylized.png" alt="stylized"/></div>
+<div align=center><img width="200" height="200" src="https://i.ibb.co/dmRVP9m/1579412691-convert.png" alt="original"/></div>
+<div align=center><img width="200" height="200" src="https://i.ibb.co/KX0HbW5/1579412691-stylized.png" alt="stylized"/></div>
 
 ## Web Demo
 Besides API, you can also run generator as web demo.
@@ -94,4 +106,4 @@ mkdir static
 python gui_demo.py
 ```
 Now you can visit localhost:5000 to enjoy the magic of generator.  
-<div align=center><img width="500" src="https://ibb.co/j3QnVwG" /></div>
+<div align=center><img width="500" src="https://i.ibb.co/p4MYWKZ/web-demo.png" /></div>

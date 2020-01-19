@@ -53,11 +53,15 @@ class AIMenuAPI(Resource):
         parser.add_argument('style')
 
         args = parser.parse_args()
+
+        if args['name'] is None:
+            return {'message': 'Error: dish name cannot be null'}
+
+        if args['style'] is None:
+            return {'message': 'Error: style cannot be null'}
+
         dish_name = args['name']  # get dish_name from parser
         style_image = self.style_images[args['style'].lower()]
-
-        if dish_name is None:
-            return {'message': 'Error: dish name cannot be null'}
 
         dst_path = '%s/%s' % (self.result_path, str(int(time.time())))
 
