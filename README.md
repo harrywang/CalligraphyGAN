@@ -27,8 +27,94 @@ and each dimension in this vector represents the weight of each Chinese characte
 
 In this part, we convert generated image into oil painting.
 
+## Run Demo with Docker
+We use docker to package our web demo. Follow the instructions to run web demo with Docker on your device.  
+**Make sure you have Docker installed correctly.**
+### Pull Images
+We package web demo and Bert service in 2 containers respectively.  
+```shell script
+docker pull zhuojg1519/ai-recepit-art
+docker pull zhuojg1519/bert-as-service
+```
 
-## Setup
+### Run Bert Server
+Make sure the `name` flag is set to `bert-as-service`, for Web Demo will send request according to this name.  
+```shell script
+docker run --detach --name bert-as-service -t bert-as-service
+```
+
+### Run Web Demo
+Make sure to expose 5000 port.  
+```shell script
+docker run --detach -p 5000:5000 --name ai-recepit-art -t ai-recepit-art
+```
+
+### Configure the Network
+This step is important for web demo to communicate with bert service.  
+```shell script
+docker network create ai-recepit
+docker network connect ai-recepit ai-recepit-art
+docker network connect ai-recepit bert-as-service
+```
+
+### Result
+After the configuration of network, run this command:
+```shell script
+docker network inspect ai-recepit
+```
+And you will see something like this, container `ai-recepit-art` and `bert-as-service` 
+are both in the network `ai-recepit`.  
+```shell script
+[
+    {
+        "Name": "ai-recepit",
+        "Id": "980528db161a9339163a67d53ca5aa01231771d3d316e2f9bf35491ea8331fa3",
+        "Created": "2020-01-21T13:12:47.9380662Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "21a1ff1bc018f82744eba010869449f6f69686d1c793f2af9b88a424e00cecfa": {
+                "Name": "ai-recepit-art",
+                "EndpointID": "99728e57a7ec298ef5262f42a01ffa8420feb8f9805996112d55cd2002774c61",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "5fb1b4bd6d6123552a40e77638aa9959f9991aac6fa1fe070d0c6acca2cd68f3": {
+                "Name": "bert-as-service",
+                "EndpointID": "613c800f87b0def148a69ed64996908e23d1f6b145149f07955f53b45d880cb2",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+```
+Then visit `http://localhost:5000` to enjoy the magic.  
+<div align=center><img width="500" src="https://i.ibb.co/p4MYWKZ/web-demo.png" /></div>
+
+## Setup on Localhost
 You need to create 2 virtual environment to run this project, one for Bert Server, one for Generator.
 ### Setup Bert Server
 * change to directory of Bert.

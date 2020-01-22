@@ -4,8 +4,8 @@ import numpy as np
 
 
 class BertClientQuery:
-    def __init__(self, words, topk=10):
-        self.bc = BertClient()
+    def __init__(self, words, topk=10, ip='localhost'):
+        self.bc = BertClient(ip=ip)
         self.doc_vecs = self.bc.encode(words)
         self.topk = topk
 
