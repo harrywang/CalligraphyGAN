@@ -4,6 +4,7 @@ import os
 from PIL import Image
 import numpy as np
 import time
+from oil_painting import OilPaint
 
 if not os.path.exists('./static/tmp'):
     os.makedirs('./static/tmp')
@@ -36,11 +37,24 @@ def generate():
         time_now = str(int(time.time()))
         resized_file = './static/tmp/%s_convert.png' % time_now
         styled_file = './static/tmp/%s_stylized.png' % time_now
+        oil_file = './static/tmp/%s_oil.png' % time_now
+        oil_dir = './static/tmp/%s_oil' % time_now
 
         Image.fromarray(denoised_img.astype(np.uint8)).save(resized_file)
         Image.fromarray(stylized_img.astype(np.uint8)).save(styled_file)
-        return render_template('cgan.html', generated=True, url_1=resized_file,
-                               url_2=styled_file, desc=desc, style=style)
+
+        op = OilPaint(file_name=resized_file)
+        if not os.path.exists(oil_dir):
+            os.makedirs(oil_dir)
+        oil_img = op.paint(epoch=30, batch_size=64, result_dir=oil_dir)
+        Image.fromarray(oil_img.astype('uint8')).save(oil_file)
+
+        return render_template('cgan.html', generated=True,
+                               url_1=resized_file,
+                               url_2=styled_file,
+                               url_3=oil_file,
+                               desc=desc,
+                               style=style)
 
 
 if __name__ == '__main__':
