@@ -35,6 +35,120 @@ noise_dim = 100
 AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
+class Conv(tf.keras.Model):
+    def __init__(self, filters, kernel_size, strides, padding='same',
+                 activation='relu', apply_batchnorm=True, norm_momentum=0.9, norm_epsilon=1e-5,
+                 leaky_relu_alpha=0.2, name='conv_layer'):
+        super(Conv, self).__init__(name=name)
+        assert activation in ['relu', 'leaky_relu', 'none']
+        self.activation = activation
+        self.apply_batchnorm = apply_batchnorm
+        self.leaky_relu_alpha = leaky_relu_alpha
+
+        self.conv = layers.Conv2D(filters=filters,
+                                  kernel_size=(kernel_size, kernel_size),
+                                  strides=strides,
+                                  padding=padding,
+                                  kernel_initializer=tf.random_normal_initializer(0., 0.02),
+                                  use_bias=not self.apply_batchnorm)
+        if self.apply_batchnorm:
+            self.batchnorm = layers.BatchNormalization(momentum=norm_momentum,
+                                                       epsilon=norm_epsilon)
+
+    def call(self, x, training=True):
+        # convolution
+        x = self.conv(x)
+
+        # batchnorm
+        if self.apply_batchnorm:
+            x = self.batchnorm(x, training=training)
+
+        # activation
+        if self.activation == 'relu':
+            x = tf.nn.relu(x)
+        elif self.activation == 'leaky_relu':
+            x = tf.nn.leaky_relu(x, alpha=self.leaky_relu_alpha)
+        else:
+            pass
+
+        return x
+
+
+class ConvTranspose(tf.keras.Model):
+    def __init__(self, filters, kernel_size, strides=2, padding='same',
+                 activation='relu', apply_batchnorm=True, norm_momentum=0.9, norm_epsilon=1e-5,
+                 name='conv_transpose_layer'):
+        super(ConvTranspose, self).__init__(name=name)
+        assert activation in ['relu', 'sigmoid', 'tanh', 'none']
+        self.activation = activation
+        self.apply_batchnorm = apply_batchnorm
+
+        self.up_conv = layers.Conv2DTranspose(filters=filters,
+                                              kernel_size=(kernel_size, kernel_size),
+                                              strides=strides,
+                                              padding=padding,
+                                              kernel_initializer=tf.random_normal_initializer(0., 0.02),
+                                              use_bias=not self.apply_batchnorm)
+        if self.apply_batchnorm:
+            self.batchnorm = layers.BatchNormalization(momentum=norm_momentum,
+                                                       epsilon=norm_epsilon)
+
+    def call(self, x, training=True):
+        # conv transpose
+        x = self.up_conv(x)
+
+        # batchnorm
+        if self.apply_batchnorm:
+            x = self.batchnorm(x, training=training)
+
+        # activation
+        if self.activation == 'relu':
+            x = tf.nn.relu(x)
+        elif self.activation == 'sigmoid':
+            x = tf.nn.sigmoid(x)
+        elif self.activation == 'tanh':
+            x = tf.nn.tanh(x)
+        else:
+            pass
+
+        return x
+
+
+class Dense(tf.keras.Model):
+    def __init__(self, units, activation='relu', apply_batchnorm=True, norm_momentum=0.9, norm_epsilon=1e-5,
+                 leaky_relu_alpha=0.2, name='dense_layer'):
+        super(Dense, self).__init__(name=name)
+        assert activation in ['relu', 'leaky_relu', 'none']
+        self.activation = activation
+        self.apply_batchnorm = apply_batchnorm
+        self.leaky_relu_alpha = leaky_relu_alpha
+
+        self.dense = layers.Dense(units=units,
+                                  kernel_initializer=tf.random_normal_initializer(0., 0.02),
+                                  use_bias=not self.apply_batchnorm)
+        if self.apply_batchnorm:
+            self.batchnorm = layers.BatchNormalization(momentum=norm_momentum,
+                                                       epsilon=norm_epsilon)
+
+    def call(self, x, training=True):
+        # dense
+        x = self.dense(x)
+
+        # batchnorm
+        if self.apply_batchnorm:
+            x = self.batchnorm(x, training=training)
+
+        # activation
+        if self.activation == 'relu':
+            x = tf.nn.relu(x)
+        elif self.activation == 'leaky_relu':
+            x = tf.nn.leaky_relu(x, alpha=self.leaky_relu_alpha)
+        else:
+            pass
+
+        return x
+
+
 class Generator(tf.keras.Model):
     """Build a generator that maps latent space to real space given conditions.
       G(z, c): (z, c) -> x
@@ -158,14 +272,11 @@ class CGAN:
         return self._load_and_preprocess_image(path), label
 
     def GANLoss(self, logits, is_real=True):
-        """Computes standard GAN loss between `logits` and `labels`.
+        """ Computes standard GAN loss between `logits` and `labels`.
 
-        Args:
-            logits (`2-rank Tensor`): logits.
-            is_real (`bool`): True means `1` labeling, False means `0` labeling.
-
-        Returns:
-            loss (`0-rank Tensor`): the standard GAN loss value. (binary_cross_entropy)
+        :param logits: (`2-rank Tensor`): logits.
+        :param is_real: (`bool`): True means `1` labeling, False means `0` labeling.
+        :return: loss (`0-rank Tensor`): the standard GAN loss value. (binary_cross_entropy)
         """
         if is_real:
             labels = tf.ones_like(logits)
@@ -174,7 +285,6 @@ class CGAN:
 
         bce = tf.losses.BinaryCrossentropy(from_logits=True)
 
-        #return tf.losses.sigmoid_cross_entropy(multi_class_labels=labels, logits=logits)
         return bce(labels, logits)
 
     def discriminator_loss(self, real_logits, fake_logits):
@@ -257,7 +367,13 @@ class CGAN:
         # restoring the latest checkpoint in checkpoint_dir
         self.checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
 
-    def generate_one_image(self, vector, result_path):
+    # TODO: rewrite this function
+    def generate_one_image(self, vector):
+        """Generate one result using input vector.
+
+        :param vector:
+        :return: sample_images. The shape of sample_images is [number of results, height, width, channel].
+        """
         sample_condition = np.zeros(100).tolist()
         try:
             for j in vector:
@@ -272,8 +388,10 @@ class CGAN:
                                                            minval=-1.0, maxval=1.0)
 
         sample_images = self.generator(const_random_vector_for_saving, sample_condition, training=False)
-        save_one_sample_image(sample_images.numpy(), result_path=result_path)
 
+        return sample_images.numpy()
+
+    # TODO: find out the pipeline of this function and rewrite it.
     def generate_gif(self, vector, result_dir):
         sample_condition = np.zeros(100).tolist()
         const_random_vector_for_saving = tf.random.uniform([1, 1, 1, noise_dim],
@@ -298,26 +416,3 @@ class CGAN:
             sample_condition_ = tf.reshape(sample_condition_, [1, 1, 1, num_classes])
             sample_images = self.generator(const_random_vector_for_saving, sample_condition_, training=False)
             save_one_sample_image(sample_images.numpy(), result_path=os.path.join(result_dir, '%d.png' % j))
-
-        # with imageio.get_writer(os.path.join(result_dir, 'result.gif'), mode='I') as writer:
-        #     last = -1
-        #     for i, j in enumerate(range(len(vector), 4, -1)):
-        #         frame = 2 * (i**0.5)
-        #         if round(frame) > round(last):
-        #             last = frame
-        #         else:
-        #             continue
-        #
-        #         image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
-        #         writer.append_data(image)
-        #
-        #     last = -1
-        #     for i, j in enumerate(range(5, len(vector))):
-        #         frame = 2 * (i**0.5)
-        #         if round(frame) > round(last):
-        #             last = frame
-        #         else:
-        #             continue
-        #
-        #         image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
-        #         writer.append_data(image)

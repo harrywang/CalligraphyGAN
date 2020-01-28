@@ -2,10 +2,12 @@ from model import CGAN
 from bert_client import BertClientQuery
 from denoise import resize_and_denoise
 from style_transfer import Stylizer
-import time
 
 
 class AIMenu:
+    """
+    Wrap the whole AI Menu pipeline in this class.
+    """
     def __init__(self, result_path='./static/tmp', topk=10):
         words = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
                  '侯', '元', '光', '利', '印', '去', '受', '右', '司', '合',
@@ -27,26 +29,41 @@ class AIMenu:
         self.cgan.reload(checkpoint_dir)
         self.result_path = result_path
 
-    def generate(self, description):
-        time_now = str(int(time.time()))
+    def generate(self, description, style_img_file, result_size=(600, 600)):
+        """Generate images according to dish name, and stylize the result according to style image.
 
+        Firstly, use Bert Client to generate a vector.
+        Then use this vector to generate character using CGAN.
+        Finally, denoise the result and stylize it.
+
+        Return the original CGAN result, resized result, denoised result and stylized result.
+        Notice that all the result are numpy array.
+        And the value of the image is uint8 belong to [0, 255].
+
+        :param description: dish name
+        :param style_img_file: image for style transfer
+        :param result_size: result size
+        :return: img, resized_img, denoised_img, stylized_img
+        """
         topk_idx = self.bcq.query(description)
 
         # do not use first 5 words because they could be similar when input dish names.
-        self.cgan.generate_one_image(topk_idx[5:], '%s/%s.png' % (self.result_path, time_now))
-        resize_and_denoise(img_path='%s/%s.png' % (self.result_path, time_now),
-                           result_size=(1200, 1200),
-                           dst_path='%s/%s_convert.png' % (self.result_path, time_now))
+        # generate a character
+        print('generating the character...')
+        img = self.cgan.generate_one_image(topk_idx[5:])[0]
+        img = (img * 0.5 + 0.5) * 255
+        img = img.astype('uint8').squeeze()
 
-        # change style_image_path to generate different style!
-        # if something wrong with style_image_path, it will use default style image
-        self.stylizer.transfer(style_image_path='./style_image/dekooning.jpg',
-                               content_image_path='%s/%s_convert.png' % (self.result_path, time_now),
-                               output_size=1200,
-                               result_path='%s/%s_stylized.png' % (self.result_path, time_now)
-                               )
+        # resize and denoise
+        # denoising will change the style transfer effect to the background
+        print('resizing and denoising the character...')
+        resized_img, denoised_img = resize_and_denoise(img, result_size)
 
-        return {
-            'url1': '%s/%s_convert.png' % (self.result_path, time_now),
-            'url2': '%s/%s_stylized.png' % (self.result_path, time_now)
-        }
+        # style transfer
+        print('stylizing the character...')
+        stylized_img = self.stylizer.transfer(style_image_path=style_img_file,
+                                              content_image=denoised_img,
+                                              output_size=1200
+                                              )
+
+        return img, resized_img, denoised_img, stylized_img

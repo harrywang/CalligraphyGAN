@@ -1,4 +1,6 @@
-tensorflow>=2.0.0
+threadpool
+numpy
+tensorflow==2.0.0
 pillow
 matplotlib
 opencv-python
@@ -8,3 +10,5 @@ flask
 flask-restful
 bert-serving-client
 inquirer
+keras
+scikit-image

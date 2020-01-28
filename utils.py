@@ -7,18 +7,41 @@ import os
 import glob
 
 import numpy as np
+from numpy import cov
 import matplotlib.pyplot as plt
 
 import PIL
 import imageio
+from keras.applications.inception_v3 import InceptionV3
+from keras.applications.inception_v3 import preprocess_input
 
-import tensorflow as tf
-from tensorflow.keras import layers
+from PIL import Image
+from skimage.transform import resize
+from scipy.linalg import sqrtm
 
-MNIST_SIZE = 28
-CIFAR10_SIZE = 32
-num_examples_to_generate = 25
-checkpoint_dir = './train'
+import cv2
+
+
+# rewrite cv2 imread to read files with Chinese characters
+def cv_read_img_BGR(img_path):
+    img = cv2.imdecode(np.fromfile(img_path, dtype=np.uint8), -1)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    return img
+
+
+# rewrite cv2 imwrite to write files with Chinese characters
+def cv_write_img_BGR(img, result_path):
+    cv2.imencode('.png', img)[1].tofile(result_path)
+
+
+def scale_images(images, new_shape):
+    images_list = list()
+    for image in images:
+        # resize with nearest neighbor interpolation
+        new_image = resize(image, new_shape, 0)
+        # store
+        images_list.append(new_image)
+    return np.asarray(images_list)
 
 
 def save_one_sample_image(sample_images, result_path, is_square=True):
@@ -28,7 +51,7 @@ def save_one_sample_image(sample_images, result_path, is_square=True):
         size = sample_images.shape[1]
         channel = sample_images.shape[3]
     else:
-        ValueError('Not valid a shape of sample_images')
+        raise ValueError('Not valid a shape of sample_images')
 
     if not is_square:
         print_images = sample_images[:1, ...]
@@ -61,11 +84,12 @@ def save_one_sample_image(sample_images, result_path, is_square=True):
         plt.axis('off')
 
     plt.savefig(result_path, dpi=300)
+    plt.close()
 
 
-def print_or_save_sample_images(sample_images, max_print_size=num_examples_to_generate,
+def print_or_save_sample_images(sample_images, max_print_size=25,
                                 is_square=False, is_save=False, epoch=None,
-                                checkpoint_dir=checkpoint_dir):
+                                checkpoint_dir='./train'):
     available_print_size = list(range(1, 101))
     assert max_print_size in available_print_size
     if len(sample_images.shape) == 2:
@@ -113,225 +137,18 @@ def print_or_save_sample_images(sample_images, max_print_size=num_examples_to_ge
         plt.show()
 
 
-def print_or_save_sample_images_two(sample_images1, sample_images2, max_print_size=num_examples_to_generate,
-                                    is_square=False, is_save=False, epoch=None,
-                                    checkpoint_dir=checkpoint_dir):
-    available_print_size = list(range(1, 26))
-    assert max_print_size in available_print_size
+# TODO: rewrite this function
+def generate_gif(vector, result_dir):
+    with imageio.get_writer(os.path.join(result_dir, 'result.gif'), mode='I') as writer:
+        for j in range(0, 40):
 
-    if len(sample_images1.shape) == 2:
-        size = int(np.sqrt(sample_images1.shape[1]))
-    elif len(sample_images1.shape) > 2:
-        size = sample_images1.shape[1]
-        channel = sample_images1.shape[3]
-    else:
-        ValueError('Not valid a shape of sample_images')
-
-    if not is_square:
-        print_images1 = sample_images1[:max_print_size, ...]
-        print_images1 = print_images1.reshape([max_print_size, size, size, channel])
-        print_images1 = print_images1.swapaxes(0, 1)
-        print_images1 = print_images1.reshape([size, max_print_size * size, channel])
-
-        print_images2 = sample_images2[:max_print_size, ...]
-        print_images2 = print_images2.reshape([max_print_size, size, size, channel])
-        print_images2 = print_images2.swapaxes(0, 1)
-        print_images2 = print_images2.reshape([size, max_print_size * size, channel])
-
-        print_images = np.concatenate((print_images1, print_images2), axis=0)
-        if channel == 1:
-            print_images = np.squeeze(print_images, axis=-1)
-
-        plt.figure(figsize=(max_print_size, 2))
-        plt.axis('off')
-        plt.imshow(print_images)  # , cmap='gray')
-    else:
-        print('This function is supported by `is_square=False` mode.')
-
-    if is_save and epoch is not None:
-        filepath = os.path.join(checkpoint_dir, 'image_at_epoch_{:04d}.png'.format(epoch))
-        plt.savefig(filepath)
-    else:
-        plt.show()
-
-
-def print_or_save_sample_images_pix2pix(x, y, z, model_name, name=None,
-                                        is_save=False, epoch=None, checkpoint_dir=checkpoint_dir):
-    # plt.figure(figsize=(15, 5))
-    plt.figure(figsize=(12, 4))
-    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
-
-    display_list = [x[0], y[0], z[0]]
-    assert model_name in ['pix2pix', 'cyclegan', 'stargan']
-    if model_name == 'pix2pix':
-        title = ['Input Image', 'Ground Truth', 'Predicted Image']
-    elif model_name == 'cyclegan':
-        assert name in ['X2Y2X', 'Y2X2Y']
-        if name == 'X2Y2X':
-            title = ['X domain', 'X -> Y', 'X -> Y -> X']
-        else:
-            title = ['Y domain', 'Y -> X', 'Y -> X -> Y']
-    else:
-        title = ['original domain', 'original -> target', 'original -> target -> original']
-
-    for i in range(3):
-        plt.subplot(1, 3, i + 1)
-        plt.title(title[i])
-        # getting the pixel values between [0, 1] to plot it.
-        plt.imshow(display_list[i] * 0.5 + 0.5)
-        plt.axis('off')
-
-    if is_save and epoch is not None:
-        if name is not None:
-            filename = 'image_' + name + '_at_epoch_'
-        else:
-            filename = 'image_at_epoch_'
-        filepath = os.path.join(checkpoint_dir, filename + '{:04d}.png'.format(epoch))
-        plt.savefig(filepath)
-    else:
-        plt.show()
-
-
-def display_image(epoch_no, name=None, checkpoint_dir=checkpoint_dir):
-    if name is not None:
-        filename = 'image_' + name + '_at_epoch_'
-    else:
-        filename = 'image_at_epoch_'
-    filepath = os.path.join(checkpoint_dir, filename + '{:04d}.png'.format(epoch_no))
-    return PIL.Image.open(filepath)
-
-
-def generate_gif(gif_filename, checkpoint_dir=checkpoint_dir):
-    with imageio.get_writer(gif_filename, mode='I') as writer:
-        filenames = glob.glob(os.path.join(checkpoint_dir, 'image*.png'))
-        filenames = sorted(filenames)
-        last = -1
-        for i, filename in enumerate(filenames):
-            frame = 2 * (i ** 0.5)
-            if round(frame) > round(last):
-                last = frame
-            else:
-                continue
-            image = imageio.imread(filename)
+            image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
             writer.append_data(image)
-        image = imageio.imread(filename)
-        writer.append_data(image)
 
-    # this is a hack to display the gif inside the notebook
-    filename_to_copy = gif_filename + '.png'
-    print('cp {} {}'.format(gif_filename, filename_to_copy))
-    os.system('cp {} {}'.format(gif_filename, filename_to_copy))
+        for j in range(0, 10):
+            image = imageio.imread(os.path.join(result_dir, '39.png'))
+            writer.append_data(image)
 
-
-class Conv(tf.keras.Model):
-    def __init__(self, filters, kernel_size, strides, padding='same',
-                 activation='relu', apply_batchnorm=True, norm_momentum=0.9, norm_epsilon=1e-5,
-                 leaky_relu_alpha=0.2, name='conv_layer'):
-        super(Conv, self).__init__(name=name)
-        assert activation in ['relu', 'leaky_relu', 'none']
-        self.activation = activation
-        self.apply_batchnorm = apply_batchnorm
-        self.leaky_relu_alpha = leaky_relu_alpha
-
-        self.conv = layers.Conv2D(filters=filters,
-                                  kernel_size=(kernel_size, kernel_size),
-                                  strides=strides,
-                                  padding=padding,
-                                  kernel_initializer=tf.random_normal_initializer(0., 0.02),
-                                  use_bias=not self.apply_batchnorm)
-        if self.apply_batchnorm:
-            self.batchnorm = layers.BatchNormalization(momentum=norm_momentum,
-                                                       epsilon=norm_epsilon)
-
-    def call(self, x, training=True):
-        # convolution
-        x = self.conv(x)
-
-        # batchnorm
-        if self.apply_batchnorm:
-            x = self.batchnorm(x, training=training)
-
-        # activation
-        if self.activation == 'relu':
-            x = tf.nn.relu(x)
-        elif self.activation == 'leaky_relu':
-            x = tf.nn.leaky_relu(x, alpha=self.leaky_relu_alpha)
-        else:
-            pass
-
-        return x
-
-
-class ConvTranspose(tf.keras.Model):
-    def __init__(self, filters, kernel_size, strides=2, padding='same',
-                 activation='relu', apply_batchnorm=True, norm_momentum=0.9, norm_epsilon=1e-5,
-                 name='conv_transpose_layer'):
-        super(ConvTranspose, self).__init__(name=name)
-        assert activation in ['relu', 'sigmoid', 'tanh', 'none']
-        self.activation = activation
-        self.apply_batchnorm = apply_batchnorm
-
-        self.up_conv = layers.Conv2DTranspose(filters=filters,
-                                              kernel_size=(kernel_size, kernel_size),
-                                              strides=strides,
-                                              padding=padding,
-                                              kernel_initializer=tf.random_normal_initializer(0., 0.02),
-                                              use_bias=not self.apply_batchnorm)
-        if self.apply_batchnorm:
-            self.batchnorm = layers.BatchNormalization(momentum=norm_momentum,
-                                                       epsilon=norm_epsilon)
-
-    def call(self, x, training=True):
-        # conv transpose
-        x = self.up_conv(x)
-
-        # batchnorm
-        if self.apply_batchnorm:
-            x = self.batchnorm(x, training=training)
-
-        # activation
-        if self.activation == 'relu':
-            x = tf.nn.relu(x)
-        elif self.activation == 'sigmoid':
-            x = tf.nn.sigmoid(x)
-        elif self.activation == 'tanh':
-            x = tf.nn.tanh(x)
-        else:
-            pass
-
-        return x
-
-
-class Dense(tf.keras.Model):
-    def __init__(self, units, activation='relu', apply_batchnorm=True, norm_momentum=0.9, norm_epsilon=1e-5,
-                 leaky_relu_alpha=0.2, name='dense_layer'):
-        super(Dense, self).__init__(name=name)
-        assert activation in ['relu', 'leaky_relu', 'none']
-        self.activation = activation
-        self.apply_batchnorm = apply_batchnorm
-        self.leaky_relu_alpha = leaky_relu_alpha
-
-        self.dense = layers.Dense(units=units,
-                                  kernel_initializer=tf.random_normal_initializer(0., 0.02),
-                                  use_bias=not self.apply_batchnorm)
-        if self.apply_batchnorm:
-            self.batchnorm = layers.BatchNormalization(momentum=norm_momentum,
-                                                       epsilon=norm_epsilon)
-
-    def call(self, x, training=True):
-        # dense
-        x = self.dense(x)
-
-        # batchnorm
-        if self.apply_batchnorm:
-            x = self.batchnorm(x, training=training)
-
-        # activation
-        if self.activation == 'relu':
-            x = tf.nn.relu(x)
-        elif self.activation == 'leaky_relu':
-            x = tf.nn.leaky_relu(x, alpha=self.leaky_relu_alpha)
-        else:
-            pass
-
-        return x
+        for j in range(39, 0, -1):
+            image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
+            writer.append_data(image)
