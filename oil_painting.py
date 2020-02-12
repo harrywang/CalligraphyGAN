@@ -594,10 +594,10 @@ class OilPaint:
         """
         for i in range(epoch):
             self._put_strokes(batch_size=batch_size, multi_thread=True)
-
-            print('Epoch %d: saving to disk...' % (i + 1))
-            cv2.imencode('.png', self.canvas * 255)[1].tofile(
-                os.path.join(result_dir, '%d.png' % i))
+            if result_path is not None:
+                print('Epoch %d: saving to disk...' % (i + 1))
+                cv2.imencode('.png', self.canvas * 255)[1].tofile(
+                    os.path.join(result_dir, '%d.png' % i))
 
         return np.array(self.canvas * 255)
 
