@@ -103,17 +103,19 @@ class BrushFactory:
 
 
 class OilPaint:
-    def __init__(self, file_name, target_color=None):
+    def __init__(self, image, target_color=None):
+        """
+
+        :param image: cv2 format Image data
+        :param target_color:
+        """
         if target_color is not None:
             self.target_color = target_color
         else:
             self.target_color = [[0., 0., 0.]]
 
-        # original image
-        original_image = imread(file_name)
-
         # convert to float32
-        original_image = original_image.astype('float32') / 255
+        original_image = image.astype('float32') / 255
 
         # canvas initialized
         canvas = original_image.copy()
@@ -594,10 +596,10 @@ class OilPaint:
         """
         for i in range(epoch):
             self._put_strokes(batch_size=batch_size, multi_thread=True)
-
-            print('Epoch %d: saving to disk...' % (i + 1))
-            cv2.imencode('.png', self.canvas * 255)[1].tofile(
-                os.path.join(result_dir, '%d.png' % i))
+            if result_dir is not None:
+                print('Epoch %d: saving to disk...' % (i + 1))
+                cv2.imencode('.png', self.canvas * 255)[1].tofile(
+                    os.path.join(result_dir, '%d.png' % i))
 
         return np.array(self.canvas * 255)
 
@@ -626,6 +628,7 @@ if __name__ == '__main__':
             target_color.append([float(co[2]) / 255., float(co[1]) / 255., float(co[0]) / 255.])
 
         op = OilPaint(
-            file_name="C:\\Users\\jing\\Programming\\ai-recepit-art\\1020_result\\奶油番茄配七彩时蔬、龙虾肉\\1571286983_convert.png",
+            image=imread("C:\\Users\\jing\\Programming\\ai-recepit-art\\1020_result"
+                         "\\奶油番茄配七彩时蔬、龙虾肉\\1571286983_convert.png"),
             target_color=target_color)
         op.paint(epoch=30, batch_size=64, result_dir='C:\\Users\\jing\\Desktop\\test')

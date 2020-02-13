@@ -12,3 +12,4 @@ bert-serving-client
 inquirer
 keras
 scikit-image
+streamlit
