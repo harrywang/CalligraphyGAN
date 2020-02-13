@@ -5,19 +5,15 @@ from PIL import Image
 import numpy as np
 import time
 from oil_painting import OilPaint
+import cv2
+from utils import styles
+
 
 if not os.path.exists('./static/tmp'):
     os.makedirs('./static/tmp')
 
 app = Flask(__name__)
 ai_menu = AIMenu(result_path='./static/tmp', topk=10)
-
-styles = {
-    'Dekooning': './style_image/dekooning.jpg',
-    'Picasso': './style_image/picasso.jpg',
-    'Pollock': './style_image/pollock.jpg',
-    'Rousseau': './style_image/rousseau.jpg'
-}
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -32,7 +28,7 @@ def generate():
             import random
             style = random.choice(list(styles.keys()))
 
-        img, resized_img, denoised_img, stylized_img = ai_menu.generate(desc, style_img_file=styles[style])
+        img, resized_img, denoised_img, stylized_img, _ = ai_menu.generate(desc, style_img_file=styles[style])
 
         time_now = str(int(time.time()))
         resized_file = './static/tmp/%s_convert.png' % time_now
@@ -43,7 +39,7 @@ def generate():
         Image.fromarray(denoised_img.astype(np.uint8)).save(resized_file)
         Image.fromarray(stylized_img.astype(np.uint8)).save(styled_file)
 
-        op = OilPaint(file_name=resized_file)
+        op = OilPaint(cv2.cvtColor(np.array(resized_img), cv2.COLOR_RGB2BGR))
         if not os.path.exists(oil_dir):
             os.makedirs(oil_dir)
         oil_img = op.paint(epoch=30, batch_size=64, result_dir=oil_dir)

@@ -22,6 +22,27 @@ from scipy.linalg import sqrtm
 import cv2
 
 
+words = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
+         '侯', '元', '光', '利', '印', '去', '受', '右', '司', '合',
+         '名', '周', '命', '和', '唯', '堂', '士', '多', '夜', '奉',
+         '女', '好', '始', '字', '孝', '守', '宗', '官', '定', '宜',
+         '室', '家', '寒', '左', '常', '建', '徐', '御', '必', '思',
+         '意', '我', '敬', '新', '易', '春', '更', '朝', '李', '来',
+         '林', '正', '武', '氏', '永', '流', '海', '深', '清', '游',
+         '父', '物', '玉', '用', '申', '白', '皇', '益', '福', '秋',
+         '立', '章', '老', '臣', '良', '莫', '虎', '衣', '西', '起',
+         '足', '身', '通', '遂', '重', '陵', '雨', '高', '黄', '鼎']
+
+
+styles = {
+    'Dekooning': './style_image/dekooning.jpg',
+    'Picasso': './style_image/picasso.jpg',
+    'Pollock': './style_image/pollock.jpg',
+    'Rousseau': './style_image/rousseau.jpg',
+    'Rothko': './style_image/rothko.jpg'
+}
+
+
 # rewrite cv2 imread to read files with Chinese characters
 def cv_read_img_BGR(img_path):
     img = cv2.imdecode(np.fromfile(img_path, dtype=np.uint8), -1)
@@ -141,7 +162,6 @@ def print_or_save_sample_images(sample_images, max_print_size=25,
 def generate_gif(vector, result_dir):
     with imageio.get_writer(os.path.join(result_dir, 'result.gif'), mode='I') as writer:
         for j in range(0, 40):
-
             image = imageio.imread(os.path.join(result_dir, '%d.png' % j))
             writer.append_data(image)
 

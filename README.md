@@ -112,7 +112,7 @@ are both in the network `ai-recepit`.
 ]
 ```
 Then visit `http://localhost:5000` to enjoy the magic.  
-<div align=center><img width="500" src="https://i.ibb.co/p4MYWKZ/web-demo.png" /></div>
+<div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
 
 ## Setup on Localhost
 You need to create 2 virtual environment to run this project, one for Bert Server, one for Generator.
@@ -184,12 +184,21 @@ Add `params` as showed in picture (or add parameters using form-data), and post.
 <div align=center><img width="200" height="200" src="https://i.ibb.co/dmRVP9m/1579412691-convert.png" alt="original"/></div>
 <div align=center><img width="200" height="200" src="https://i.ibb.co/KX0HbW5/1579412691-stylized.png" alt="stylized"/></div>
 
-## Web Demo
+## Web Demo with Streamlit
+We use [Streamlit](https://www.streamlit.io/) to build a demo to show our model.
+* Make sure Bert is running, you are in directory of ai-recepit-art, you have installed all the requirements and you have downloaded checkpoints.  
+```shell script
+streamlit run st_demo.py
+```
+Now you can visit `localhost:8501` to enjoy it.
+<div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
+
+## Web Demo (old version)
 Besides API, you can also run generator as web demo.
 * Make sure Bert is running, you are in directory of ai-recepit-art, you have installed all the requirements and you have downloaded checkpoints.  
 ```shell script
 mkdir static
 python gui_demo.py
 ```
-Now you can visit localhost:5000 to enjoy the magic of generator.  
+Now you can visit `localhost:5000` to enjoy the magic of generator.  
 <div align=center><img width="500" src="https://i.ibb.co/p4MYWKZ/web-demo.png" /></div>
