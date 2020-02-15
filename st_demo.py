@@ -30,17 +30,19 @@ def main():
         denoised_image = st.empty()
         stylized_image = st.empty()
         oil_image = st.empty()
-        with st.spinner('Generating...') as info:
+        with st.spinner('Generating...'):
+            # do not denoise the image for better performance
             img, resized_img, denoised_img, stylized_img, topk_idx = ai_menu.generate(description=dish_name,
                                                                                       style_img_file=styles[style_name],
                                                                                       denoise=False,
                                                                                       result_size=(300, 300))
-            used_words.markdown('The model use **%s** to generate image.' % ','.join([words[idx] for idx in topk_idx]))
+            used_words.markdown('The model uses **%s** to generate image.' % ','.join([words[idx] for idx in topk_idx]))
             denoised_image.image(resized_img, width=300, caption='generated image')
             stylized_image.image(stylized_img, width=300, caption='stylized image')
 
             op = OilPaint(cv2.cvtColor(np.array(resized_img), cv2.COLOR_RGB2BGR))
-            oil_img = op.paint(epoch=30, batch_size=64, result_dir=None) / 255.
+            # smaller number for epoch and batch_size for better performance
+            oil_img = op.paint(epoch=10, batch_size=32, result_dir=None) / 255.
 
             oil_image.image(oil_img, width=300, caption='oiled image')
             st.balloons()
