@@ -1,0 +1,18 @@
+version: "3"
+services:
+  web:
+    image: zhuojg1519/ai-recepit-art
+    container_name: ai-recepit-art
+    hostname: ai-recepit-art
+    ports:
+      - 8501:8501
+    networks:
+      - ai-recepit
+  bert:
+    image: zhuojg1519/bert-as-service
+    container_name: bert-as-service
+    hostname: bert-as-service
+    networks:
+      - ai-recepit
+networks:
+  ai-recepit:
