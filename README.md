@@ -40,9 +40,61 @@ And you will see this if everything goes right:
 Creating ai-recepit-art  ... done
 Creating bert-as-service ... done
 ```
+  
+>**Notice**:
+If you already have images of this project (`zhuojg1519/ai-recepit-art` or `zhuojg1519/bert-as-service`), make sure they are
+up to date or just remove them.
+>* Check the list of docker images:
+>```shell script
+>docker images
+>```
+>* If you already have them, update them by:
+>```shell script
+>docker pull zhuojg1519/ai-recepit-art:latest
+>docker pull zhuojg1519/bert-as-service:latest
+>```
+>or remove them by:
+>```shell script
+>docker rmi zhuojg1519/ai-recepit-art
+>docker rmi zhuojg1519/bert-as-service
+>```
 
 Then visit `http://localhost:8501` to enjoy the magic.  
 <div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
+
+### Stop Services
+To stop services of this project, just use `stop` command or `down` command.
+
+* If you want to stop services but **NOT** remove the containers, networks, or images:
+```shell script
+docker-compose stop
+```
+You will see:
+```shell script
+Stopping bert-as-service ... done
+Stopping ai-recepit-art  ... done
+```
+And you can use `start` command to start services again.
+```shell script
+docker-compose start
+```
+The output should be:
+```shell script
+Starting web  ... done
+Starting bert ... done
+```
+* If you want to stop services and **remove the containers and networks**:
+```shell script
+docker-compose down
+```
+The output should be this, which means containers and networks were all removed.
+```shell script
+Stopping bert-as-service ... done
+Stopping ai-recepit-art  ... done
+Removing bert-as-service ... done
+Removing ai-recepit-art  ... done
+Removing network ai-recepit-art_ai-recepit
+```
 
 ## Setup on Localhost
 You need to create 2 virtual environment to run this project, one for Bert Server, one for Generator.
