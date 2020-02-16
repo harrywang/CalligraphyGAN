@@ -1,7 +1,7 @@
 version: "3"
 services:
   web:
-    image: zhuojg1519/ai-recepit-art
+    image: zhuojg1519/ai-recepit-art:latest
     container_name: ai-recepit-art
     hostname: ai-recepit-art
     ports:
@@ -9,7 +9,7 @@ services:
     networks:
       - ai-recepit
   bert:
-    image: zhuojg1519/bert-as-service
+    image: zhuojg1519/bert-as-service:latest
     container_name: bert-as-service
     hostname: bert-as-service
     networks:
