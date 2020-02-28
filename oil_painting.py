@@ -107,10 +107,10 @@ class OilPaint:
         """
 
         :param image: cv2 format Image data
-        :param target_color:
+        :param target_color: the value is between [0., 1.]
         """
         if target_color is not None:
-            self.target_color = target_color
+            self.target_color = list(target_color)
         else:
             self.target_color = [[0., 0., 0.]]
 
