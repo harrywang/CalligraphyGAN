@@ -10,18 +10,36 @@ class AIMenu:
     """
     Wrap the whole AI Menu pipeline in this class.
     """
+
     def __init__(self, result_path='./static/tmp', topk=10):
         checkpoint_dir = './ckpt'
 
         self.cgan = CGAN()
-        self.bcq = BertClientQuery(words=words, topk=topk)
+        self.bcq = BertClientQuery(words=words, topk=topk, ip='localhost')
         self.stylizer = Stylizer()
 
         self.cgan.reload(checkpoint_dir)
         self.result_path = result_path
 
+    def get_topk_idx(self, description, topk=10):
+        return self.bcq.query(description, topk=topk)
+
+    def generate_character(self, topk_idx):
+        img = self.cgan.generate_one_image(topk_idx)[0]
+        img = (img * 0.5 + 0.5) * 255
+        img = img.astype('uint8').squeeze()
+
+        return img
+
+    def style_transfer(self, style_image_path, content_img, output_size):
+        return self.stylizer.transfer(style_image_path=style_image_path,
+                                      content_image=content_img,
+                                      output_size=output_size
+                                      )
+
     def generate(self, description, style_img_file, denoise=True, result_size=(600, 600)):
         """Generate images according to dish name, and stylize the result according to style image.
+        This function wrap the whole pipeline.
 
         Firstly, use Bert Client to generate a vector.
         Then use this vector to generate character using CGAN.
@@ -37,14 +55,12 @@ class AIMenu:
         :param result_size: result size
         :return: img, resized_img, denoised_img, stylized_img
         """
-        topk_idx = self.bcq.query(description)
+        topk_idx = self.get_topk_idx(description)
 
         # do not use first 5 words because they could be similar when input dish names.
         # generate a character
         print('generating the character...')
-        img = self.cgan.generate_one_image(topk_idx[5:])[0]
-        img = (img * 0.5 + 0.5) * 255
-        img = img.astype('uint8').squeeze()
+        img = self.generate_character(topk_idx[5:])
 
         if denoise:
             # resize and denoise
@@ -60,9 +76,8 @@ class AIMenu:
 
         # style transfer
         print('stylizing the character...')
-        stylized_img = self.stylizer.transfer(style_image_path=style_img_file,
-                                              content_image=denoised_img,
-                                              output_size=1200
-                                              )
+        stylized_img = self.style_transfer(style_image_path=style_img_file,
+                                           content_img=denoised_img,
+                                           output_size=1200)
 
         return img, resized_img, denoised_img, stylized_img, topk_idx[5:]

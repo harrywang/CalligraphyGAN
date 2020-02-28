@@ -2,23 +2,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-
 import os
-import glob
-
 import numpy as np
-from numpy import cov
 import matplotlib.pyplot as plt
-
-import PIL
 import imageio
-from keras.applications.inception_v3 import InceptionV3
-from keras.applications.inception_v3 import preprocess_input
-
 from PIL import Image
 from skimage.transform import resize
-from scipy.linalg import sqrtm
-
+import cv2
+from sklearn.cluster import KMeans
+import utils
 import cv2
 
 
@@ -42,6 +34,16 @@ styles = {
     'Rothko': './style_image/rothko.jpg'
 }
 
+style_image_path = './style_image'
+
+
+def get_style_dict():
+    result = {}
+    for item in os.listdir(style_image_path):
+        result[item.split('.')[0]] = os.path.join(style_image_path, item)
+
+    return result
+
 
 # rewrite cv2 imread to read files with Chinese characters
 def cv_read_img_BGR(img_path):
@@ -53,6 +55,68 @@ def cv_read_img_BGR(img_path):
 # rewrite cv2 imwrite to write files with Chinese characters
 def cv_write_img_BGR(img, result_path):
     cv2.imencode('.png', img)[1].tofile(result_path)
+
+
+# function to get topk color in image
+def color_cluster(image_path, topk=5):
+    """
+    get top-k colors in an image
+    :param topk:
+    :param image_path:
+    :return:
+    """
+    image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    image = image.reshape((image.shape[0] * image.shape[1], 3))
+    # cluster the pixel intensities
+    clt = KMeans(n_clusters=topk)
+    clt.fit(image)
+
+    # below is the code to visualize the resultsv
+    # plt.figure()
+    # plt.axis("off")
+    # plt.imshow(image)
+    #
+    def centroid_histogram(clt):
+        # grab the number of different clusters and create a histogram
+        # based on the number of pixels assigned to each cluster
+        numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
+        (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+        # normalize the histogram, such that it sums to one
+        hist = hist.astype("float")
+        hist /= hist.sum()
+        # return the histogram
+        return hist
+
+    def plot_colors(hist, centroids):
+        # initialize the bar chart representing the relative frequency
+        # of each of the colors
+        bar = np.zeros((50, 300, 3), dtype="uint8")
+        startX = 0
+        # loop over the percentage of each cluster and the color of
+        # each cluster
+        for (percent, color) in zip(hist, centroids):
+            # plot the relative percentage of each cluster
+            endX = startX + (percent * 300)
+            cv2.rectangle(bar, (int(startX), 0), (int(endX), 50),
+                          color.astype("uint8").tolist(), -1)
+            startX = endX
+
+        # return the bar chart
+        return bar
+
+    # build a histogram of clusters and then create a figure
+    # representing the number of pixels labeled to each color
+    hist = centroid_histogram(clt)
+    bar = plot_colors(hist, clt.cluster_centers_)
+
+    return bar, clt.cluster_centers_
+    # # show our color bart
+    # plt.figure()
+    # plt.axis("off")
+    # plt.imshow(bar)
+    # plt.show()
 
 
 def scale_images(images, new_shape):

@@ -15,7 +15,7 @@ def denoise_by_value(img, threshold):
     return np.array(img, dtype='uint8')
 
 
-def resize_and_denoise(img, result_size):
+def resize_and_denoise(img, result_size, denoise_th):
     img = img.astype('uint8')
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     img = cv2.resize(img, result_size, interpolation=cv2.INTER_AREA)
@@ -23,11 +23,8 @@ def resize_and_denoise(img, result_size):
     result_resized = cv2.cvtColor(dst, cv2.COLOR_BGR2RGB)
 
     dst = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
-    result_denoised = denoise_by_value(dst, 255. / 2)
+    result_denoised = denoise_by_value(dst, denoise_th)
     result_denoised = cv2.cvtColor(result_denoised, cv2.COLOR_GRAY2RGB)
-
-    # utils.cv_write_img_BGR(dst, dst_path)
-    # denoise_by_value(255. / 2, dst_path, dst_path)
 
     return result_resized, result_denoised
 

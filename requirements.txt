@@ -12,4 +12,5 @@ bert-serving-client
 inquirer
 keras
 scikit-image
-streamlit
+streamlit==0.55.0
+scikit-learn

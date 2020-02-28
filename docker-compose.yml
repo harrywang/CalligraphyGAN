@@ -1,7 +1,7 @@
 version: "3"
 services:
   web:
-    image: zhuojg1519/ai-recepit-art:latest
+    image: zhuojg1519/ai-recepit-art:bauhaus
     container_name: ai-recepit-art
     hostname: ai-recepit-art
     ports:

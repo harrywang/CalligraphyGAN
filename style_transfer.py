@@ -100,7 +100,7 @@ class Stylizer:
         stylized_image = outputs[0]
 
         stylized_image = np.array(stylized_image)
-        stylized_image = np.reshape(stylized_image, (1200, 1200, 3))
+        stylized_image = np.reshape(stylized_image, (output_size, output_size, 3))
         stylized_image *= 255
 
         return stylized_image.astype('uint8')
