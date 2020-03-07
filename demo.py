@@ -7,10 +7,9 @@ import inquirer
 import numpy as np
 import glob
 from PIL import Image
-from math import ceil, floor
+from math import ceil
 from ai_menu import AIMenu
 from oil_painting import OilPaint
-from utils import words
 
 
 def open_file(path):
@@ -24,7 +23,7 @@ def open_file(path):
 
 if __name__ == '__main__':
     print('initializing ......')
-    menu = AIMenu(result_path='./result', topk=10)
+    menu = AIMenu(result_path='./result')
 
     while True:
         query = input("Enter dish name - [default:红烧肉卤鸡蛋]:")
@@ -65,7 +64,7 @@ if __name__ == '__main__':
             print('start oil painting...')
             if not os.path.exists(oil_dir):
                 os.makedirs(oil_dir)
-            op = OilPaint(file_name=resized_file)
+            op = OilPaint(Image.fromarray(denoised_img.astype(np.uint8)))
             oil_img = op.paint(epoch=30, batch_size=64, result_dir=oil_dir)
 
             Image.fromarray(oil_img.astype('uint8')).save(oil_file)

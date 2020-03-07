@@ -6,11 +6,11 @@ matplotlib
 opencv-python
 imageio
 tensorflow_hub
-flask
-flask-restful
-bert-serving-client
 inquirer
 keras
 scikit-image
 streamlit==0.55.0
 scikit-learn
+transformers
+flask
+flask-restful

@@ -1,9 +1,9 @@
 from model import CGAN
-from bert_client import BertClientQuery
 from denoise import resize_and_denoise
 from style_transfer import Stylizer
 import cv2
 from utils import words
+from bert_transformers import BertQuery
 
 
 class AIMenu:
@@ -11,11 +11,11 @@ class AIMenu:
     Wrap the whole AI Menu pipeline in this class.
     """
 
-    def __init__(self, result_path='./static/tmp', topk=10):
+    def __init__(self, result_path='./static/tmp'):
         checkpoint_dir = './ckpt'
 
         self.cgan = CGAN()
-        self.bcq = BertClientQuery(words=words, topk=topk, ip='localhost')
+        self.bcq = BertQuery(model_dir='./ckpt/transformers')
         self.stylizer = Stylizer()
 
         self.cgan.reload(checkpoint_dir)

@@ -20,7 +20,7 @@ def init():
     styles = get_style_dict()
 
     # init AIMenu for image generating
-    ai_menu = AIMenu(result_path='./static/tmp', topk=10)
+    ai_menu = AIMenu(result_path='./static/tmp')
     return menu_images, styles, ai_menu
 
 
