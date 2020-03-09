@@ -391,6 +391,31 @@ class CGAN:
 
         return sample_images.numpy()
 
+    def generate_images(self, vector, number):
+        """
+
+        :param vector:
+        :param number:
+        :return:
+        """
+        sample_condition = np.zeros(100).tolist()
+        try:
+            for j in vector:
+                sample_condition[j] = 1.
+        except Exception as e:
+            print(e)
+
+        sample_condition = np.array(sample_condition, dtype=np.float32)
+        sample_condition = tf.reshape(sample_condition, [1, 1, 1, num_classes])
+        sample_condition = tf.concat([sample_condition] * number, axis=0)
+
+        const_random_vector_for_saving = tf.random.uniform([number, 1, 1, noise_dim],
+                                                           minval=-1.0, maxval=1.0)
+
+        images = self.generator(const_random_vector_for_saving, sample_condition, training=False)
+
+        return images.numpy()
+
     # TODO: find out the pipeline of this function and rewrite it.
     def generate_gif(self, vector, result_dir):
         sample_condition = np.zeros(100).tolist()

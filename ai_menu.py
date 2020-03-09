@@ -4,6 +4,7 @@ from style_transfer import Stylizer
 import cv2
 from utils import words
 from bert_transformers import BertQuery
+from aestheic_filter import WhiteSpaceFilter
 
 
 class AIMenu:
@@ -30,6 +31,26 @@ class AIMenu:
         img = img.astype('uint8').squeeze()
 
         return img
+
+    def generate_character_with_filter(self, topk_idx, number, filters, topk):
+        """
+        Genereate many characters with topk_idx, and filter results using filters.
+        Filters are implemented in aesthetic_filter.py.
+
+        :param topk_idx:
+        :param number: How many test results should be generated.
+        :return: List of filtered images.
+        """
+        images = self.cgan.generate_images(topk_idx, number)
+
+        images = (images * 0.5 + 0.5) * 255
+        images = images.astype('uint8').squeeze()
+
+        # Now the shape of images is [number, 224, 224]
+        for f in filters:
+            images = f.get_result(input_image=images, topk=topk)
+
+        return images
 
     def style_transfer(self, style_image_path, content_img, output_size):
         return self.stylizer.transfer(style_image_path=style_image_path,

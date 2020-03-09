@@ -6,6 +6,7 @@ from denoise import resize_and_denoise
 import cv2
 from utils import words, color_cluster, get_style_dict
 import os
+from aestheic_filter import WhiteSpaceFilter
 
 
 @st.cache(allow_output_mutation=True)
@@ -61,10 +62,12 @@ def main():
     )
 
     st.sidebar.image(styles[style_name], width=300, caption=style_name)
-    st.sidebar.subheader('Threshold for Denoising')
-    denoise_th = st.sidebar.slider(
-        label='Pixel with value more than threshold will be convert to 255.',
-        min_value=0, max_value=255, step=1, value=127)
+
+    # I set threshold for denoising same as `white_threshold` in White Space Ratio settings.
+    # st.sidebar.subheader('Threshold for Denoising')
+    # denoise_th = st.sidebar.slider(
+    #     label='Pixel with value more than threshold will be convert to 255.',
+    #     min_value=0, max_value=255, step=1, value=127)
 
     st.sidebar.subheader('Number of Color Clusters')
     number_color = st.sidebar.slider(
@@ -76,6 +79,20 @@ def main():
     number_characters = st.sidebar.slider(
         label='Number of characters to generate result.',
         min_value=3, max_value=10, step=1, value=5
+    )
+
+    st.sidebar.subheader('Threshold of White Space Ratio')
+    white_space_lower = st.sidebar.slider(
+        label='Lower bound of white space ratio.',
+        min_value=0., max_value=1., step=0.1, value=0.3
+    )
+    white_space_upper = st.sidebar.slider(
+        label='Upper bound of white space ratio.',
+        min_value=0., max_value=1., step=0.1, value=0.6
+    )
+    white_threshold = st.sidebar.slider(
+        label='Pixel will be considered as white when its value is larger than this number.',
+        min_value=0, max_value=255, step=1, value=127
     )
 
     if st.sidebar.button('Generate'):
@@ -96,10 +113,14 @@ def main():
             topk_idx = ai_menu.get_topk_idx(dish_name, topk=number_characters * 2)[number_characters:]
             used_words.markdown('The model uses **%s** to generate image.' % ','.join([words[idx] for idx in topk_idx]))
 
-            img = ai_menu.generate_character(topk_idx)
+            filters = [
+                WhiteSpaceFilter(t_min=white_space_lower, t_max=white_space_upper, white_threshold=white_threshold)
+            ]
+            # TODO: How to show result when all generated result are filtered.
+            img = ai_menu.generate_character_with_filter(topk_idx=topk_idx, number=100, filters=filters, topk=1)[0]
 
             # denoise and resize
-            _, denoised_img = resize_and_denoise(img, (300, 300), denoise_th)
+            _, denoised_img = resize_and_denoise(img, (300, 300), white_threshold)
 
             denoised_image_ph.image(denoised_img, width=300,
                                     caption='generated from %s' % ','.join([words[idx] for idx in topk_idx]))
