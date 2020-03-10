@@ -1,31 +1,33 @@
-# Art Generation based on Receipt Data
+# Calligraphy + Food + AI
+
+Beautiful Enough to Feast the Eyes 秀色可餐
 
 ## Introduction
 This is the implementation of *Taming Generative Modeling and Natural Language Processing for Creative Customer Engagement*.  
-  
-This is a creative framework based on Conditional Generative Adversarial Networks and Contextual Neural Language Model to generate artworks that have intrinsic meaning and aesthetic value.  
-  
+
+This is a creative framework based on Conditional Generative Adversarial Networks and Contextual Neural Language Model to generate artworks that have intrinsic meaning and aesthetic value.
+
 Input a dish name or description in Chinese, and we can get a image representing these Chinese characters.  
 
 The whole framework is composed of 3 parts -- **Bert**, **CGAN** and **Oil Painting**.
 
 ### Dataset
 We use 100 Chinese characters to test our framework.  
-  
+
 Examples from the dataset (Chinese character 好):  
 ![dataset_sample](https://i.ibb.co/HBNy5T7/dataset-sample.png)
 ### Bert
->Inspired by https://github.com/huggingface/transformers  
+>adapted based on https://github.com/huggingface/transformers  
 
 In this part, we developed a simple algorithm based on BERT to map the input text with arbitrary number of characters into five characters from the 100 characters.
 
 ### CGAN
 In this part, we use 100 Chinese characters as training data to train a generator.  
-This generator take a 100-dimensional vector as input, 
+This generator take a 100-dimensional vector as input,
 and each dimension in this vector represents the weight of each Chinese character in the data set.
 
 ### Oil Painting
->Inspired by https://github.com/ctmakro/opencv_playground  
+>adapted based on by https://github.com/ctmakro/opencv_playground  
 
 In this part, we convert generated image into oil painting.
 
@@ -36,8 +38,13 @@ Just **make sure you have Docker Desktop installed correctly.**
 docker run -t -p 8501:8501 --detach zhuojg1519/ai-recepit-art
 ```
 
->Notie: If you already have `zhuojg1519/ai-recepit-art`, make sure it is up to date.
->Or you can just delete it and pull the newest image.
+>**Notice**:
+If you already have image of this project (`zhuojg1519/ai-recepit-art`), make sure it is up to date or just remove it.
+>* Check the list of docker images:
+>```shell script
+>docker images
+>```
+>* If you already have it, remove it by:
 >```shell script
 >docker rmi zhuojg1519/ai-recepit-art
 >```
