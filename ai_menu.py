@@ -1,9 +1,10 @@
 from model import CGAN
-from bert_client import BertClientQuery
 from denoise import resize_and_denoise
 from style_transfer import Stylizer
 import cv2
 from utils import words
+from bert_transformers import BertQuery
+from aestheic_filter import WhiteSpaceFilter
 
 
 class AIMenu:
@@ -11,11 +12,11 @@ class AIMenu:
     Wrap the whole AI Menu pipeline in this class.
     """
 
-    def __init__(self, result_path='./static/tmp', topk=10):
+    def __init__(self, result_path='./static/tmp'):
         checkpoint_dir = './ckpt'
 
         self.cgan = CGAN()
-        self.bcq = BertClientQuery(words=words, topk=topk, ip='localhost')
+        self.bcq = BertQuery(model_dir='./ckpt/transformers')
         self.stylizer = Stylizer()
 
         self.cgan.reload(checkpoint_dir)
@@ -30,6 +31,26 @@ class AIMenu:
         img = img.astype('uint8').squeeze()
 
         return img
+
+    def generate_character_with_filter(self, topk_idx, number, filters, topk):
+        """
+        Genereate many characters with topk_idx, and filter results using filters.
+        Filters are implemented in aesthetic_filter.py.
+
+        :param topk_idx:
+        :param number: How many test results should be generated.
+        :return: List of filtered images.
+        """
+        images = self.cgan.generate_images(topk_idx, number)
+
+        images = (images * 0.5 + 0.5) * 255
+        images = images.astype('uint8').squeeze()
+
+        # Now the shape of images is [number, 224, 224]
+        for f in filters:
+            images = f.get_result(input_image=images, topk=topk)
+
+        return images
 
     def style_transfer(self, style_image_path, content_img, output_size):
         return self.stylizer.transfer(style_image_path=style_image_path,

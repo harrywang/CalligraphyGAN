@@ -17,13 +17,15 @@ We use 100 Chinese characters to test our framework.
 Examples from the dataset (Chinese character 好):  
 ![dataset_sample](https://i.ibb.co/HBNy5T7/dataset-sample.png)
 ### Bert
->adapted based on https://github.com/hanxiao/bert-as-service  
+>adapted based on https://github.com/huggingface/transformers  
 
 In this part, we developed a simple algorithm based on BERT to map the input text with arbitrary number of characters into five characters from the 100 characters.
+
 ### CGAN
 In this part, we use 100 Chinese characters as training data to train a generator.  
 This generator take a 100-dimensional vector as input,
 and each dimension in this vector represents the weight of each Chinese character in the data set.
+
 ### Oil Painting
 >adapted based on by https://github.com/ctmakro/opencv_playground  
 
@@ -32,94 +34,26 @@ In this part, we convert generated image into oil painting.
 ## Run Demo with Docker
 We use docker to package our web demo and write `docker-compose.yml` to run our application.  
 Just **make sure you have Docker Desktop installed correctly.**  
-Change directory to where `docker-compose.yml` is and run this command:
 ```shell script
-docker-compose up --detach
-```
-
-And you will see this if everything goes right:
-```shell script
-Creating ai-recepit-art  ... done
-Creating bert-as-service ... done
+docker run -t -p 8501:8501 --detach zhuojg1519/ai-recepit-art
 ```
 
 >**Notice**:
-If you already have images of this project (`zhuojg1519/ai-recepit-art` or `zhuojg1519/bert-as-service`), make sure they are
-up to date or just remove them.
+If you already have image of this project (`zhuojg1519/ai-recepit-art`), make sure it is up to date or just remove it.
 >* Check the list of docker images:
 >```shell script
 >docker images
 >```
->* If you already have them, update them by:
->```shell script
->docker pull zhuojg1519/ai-recepit-art:latest
->docker pull zhuojg1519/bert-as-service:latest
->```
->or remove them by:
+>* If you already have it, remove it by:
 >```shell script
 >docker rmi zhuojg1519/ai-recepit-art
->docker rmi zhuojg1519/bert-as-service
 >```
 
 Then visit `http://localhost:8501` to enjoy the magic.  
 <div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
 
-### Stop Services
-To stop services of this project, just use `stop` command or `down` command.
-
-* If you want to stop services but **NOT** remove the containers, networks, or images:
-```shell script
-docker-compose stop
-```
-You will see:
-```shell script
-Stopping bert-as-service ... done
-Stopping ai-recepit-art  ... done
-```
-And you can use `start` command to start services again.
-```shell script
-docker-compose start
-```
-The output should be:
-```shell script
-Starting web  ... done
-Starting bert ... done
-```
-* If you want to stop services and **remove the containers and networks**:
-```shell script
-docker-compose down
-```
-The output should be this, which means containers and networks were all removed.
-```shell script
-Stopping bert-as-service ... done
-Stopping ai-recepit-art  ... done
-Removing bert-as-service ... done
-Removing ai-recepit-art  ... done
-Removing network ai-recepit-art_ai-recepit
-```
 
 ## Setup on Localhost
-You need to create 2 virtual environment to run this project, one for Bert Server, one for Generator.
-### Setup Bert Server
-* change to directory of Bert.
-```shell script
-python3 -m venv venv
-source venv/bin/activate
-pip install tensorflow==1.14.0
-pip install bert-serving-server
-```
-* Download checkpoint from https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip and unzip it. Remember to change `model_dir` according to your directory
-```shell script
-bert-serving-start -model_dir ./tmp/chinese_L-12_H-768_A-12 -num_worker=1
-```
-you should see the following message:
-
-```
-I:WORKER-0:[__i:gen:559]:ready and listening!
-I:VENTILATOR:[__i:_ru:164]:all set, ready to serve request!
-```
-
-### Setup Generation
 * Change to directory of ai-recepit-art
 * Download checkpoint from https://drive.google.com/drive/folders/1W42ZRVCr3o2I_xwUNZFY_AQp4juUSahR?usp=sharing, and move files to ai-recepit-art/ckpt
 
@@ -170,19 +104,9 @@ Add `params` as showed in picture (or add parameters using form-data), and post.
 
 ## Web Demo with Streamlit
 We use [Streamlit](https://www.streamlit.io/) to build a demo to show our model.
-* Make sure Bert is running, you are in directory of ai-recepit-art, you have installed all the requirements and you have downloaded checkpoints.  
+* Make sure you are in directory of ai-recepit-art, you have installed all the requirements and you have downloaded checkpoints.  
 ```shell script
 streamlit run st_demo.py
 ```
 Now you can visit `localhost:8501` to enjoy it.
 <div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
-
-## Web Demo (old version)
-Besides API, you can also run generator as web demo.
-* Make sure Bert is running, you are in directory of ai-recepit-art, you have installed all the requirements and you have downloaded checkpoints.  
-```shell script
-mkdir static
-python gui_demo.py
-```
-Now you can visit `localhost:5000` to enjoy the magic of generator.  
-<div align=center><img width="500" src="https://i.ibb.co/p4MYWKZ/web-demo.png" /></div>

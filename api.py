@@ -41,7 +41,7 @@ class AIMenuAPI(Resource):
             'rothko': './style_image/rothko.jpg'
         }
 
-        self.menu = AIMenu(result_path=self.result_path, topk=10)
+        self.menu = AIMenu(result_path=self.result_path)
 
     def get(self):
         return {'message': 'you are sending a GET request to AIMenu'}

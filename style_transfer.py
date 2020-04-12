@@ -61,8 +61,7 @@ class Stylizer:
 
     def import_image(self, img, image_size=(256, 256)):
         img = img.astype(np.float32)[np.newaxis, ...]
-        # print(img.shape)
-        # img = img[:, :, :, :3]
+        img = img[:, :, :, :3]
         if img.max() > 1.0:
             img = img / 255.
         if len(img.shape) == 3:

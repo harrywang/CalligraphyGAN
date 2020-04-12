@@ -26,13 +26,13 @@ words = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
          '足', '身', '通', '遂', '重', '陵', '雨', '高', '黄', '鼎']
 
 
-styles = {
-    'Dekooning': './style_image/dekooning.jpg',
-    'Picasso': './style_image/picasso.jpg',
-    'Pollock': './style_image/pollock.jpg',
-    'Rousseau': './style_image/rousseau.jpg',
-    'Rothko': './style_image/rothko.jpg'
-}
+# styles = {
+#     'Dekooning': './style_image/dekooning.jpg',
+#     'Picasso': './style_image/picasso.jpg',
+#     'Pollock': './style_image/pollock.jpg',
+#     'Rousseau': './style_image/rousseau.jpg',
+#     'Rothko': './style_image/rothko.jpg'
+# }
 
 style_image_path = './style_image'
 
