@@ -17,7 +17,6 @@ from utils import *
 import pathlib
 import random
 
-
 # Training Flags (hyperparameter configuration)
 train_dir = './ckpt'
 
@@ -28,8 +27,8 @@ save_images_epochs = 1
 batch_size = 32
 learning_rate_D = 1e-4
 learning_rate_G = 1e-3
-k = 1 # the number of step of learning D before learning G (Not used in this code)
-num_classes = 100 # number of classes for Calligraphy(should be 100, but 12 folder disappear)
+k = 1  # the number of step of learning D before learning G (Not used in this code)
+num_classes = 100  # number of classes for Calligraphy(should be 100, but 12 folder disappear)
 num_examples_to_generate = 100
 noise_dim = 100
 AUTOTUNE = tf.data.experimental.AUTOTUNE
@@ -230,9 +229,9 @@ class CGAN:
             tf.io.gfile.makedirs(checkpoint_dir)
         checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
         self.checkpoint = tf.train.Checkpoint(generator_optimizer=self.generator_optimizer,
-                                         discriminator_optimizer=self.discriminator_optimizer,
-                                         generator=self.generator,
-                                         discriminator=self.discriminator)
+                                              discriminator_optimizer=self.discriminator_optimizer,
+                                              generator=self.generator,
+                                              discriminator=self.discriminator)
 
     def _load_data(self, data_root):
         all_image_paths = list(data_root.glob('*/*'))
@@ -315,7 +314,8 @@ class CGAN:
         gradients_of_discriminator = disc_tape.gradient(disc_loss, self.discriminator.trainable_variables)
         gradients_of_generator = gen_tape.gradient(gen_loss, self.generator.trainable_variables)
 
-        self.discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, self.discriminator.trainable_variables))
+        self.discriminator_optimizer.apply_gradients(
+            zip(gradients_of_discriminator, self.discriminator.trainable_variables))
         self.generator_optimizer.apply_gradients(zip(gradients_of_generator, self.generator.trainable_variables))
 
         return gen_loss, disc_loss

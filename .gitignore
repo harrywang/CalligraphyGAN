@@ -116,3 +116,12 @@ ckpt/
 
 # results for web demo
 static/tmp/
+
+# data
+data/*.h5*
+
+# static
+static/
+
+# train
+train/
