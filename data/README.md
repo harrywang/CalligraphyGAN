@@ -10,9 +10,19 @@ Examples from the dataset (Chinese character 好):
 ## Chenzhongjian Calligraphy Dataset
 
 From http://163.20.160.14/, we crawled hundreds of thousands of Chinese characters pictures written by different calligraphers.  
-There are two kinds of data in this dataset, one is traditional Chinese characters, and the other is simplified Chinese characters, they are both packaged as hdf5 files.  
+They are all packaged as hdf5 files.  
 >
->link for simplified characters: https://mega.nz/file/wSw3iBTL  
->link for traditional characters: `Coming Soon`  
+>link for data: https://mega.nz/file/oG4ikCoR  
 >
-The pictures of simplified Chinese characters were briefly analyzed, and the results can be seen in `eda.ipynb`.
+### Brief Information 
+Examples from the dataset (Chinese character 阿):  
+![dataset_sample](https://i.ibb.co/ZW3SKsc/data-sample.png)  
+Total number of images: 350656  
+Total number of writers: 48  
+Total number of characters: 7721  
+Image size: 140×140  
+Characters with more than 100 images: 173  
+Characters with more than 50 images: 3917  
+Characters with more than 30 images: 6054  
+
+The EDA of dataset is in `eda.ipynb`.
