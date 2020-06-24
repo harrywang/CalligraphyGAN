@@ -112,6 +112,9 @@ ckpt/
 # PyCharm
 .idea/
 
+# VS Code
+.vscode
+
 .DS_store
 
 # results for web demo
