@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 from tensorflow.keras import layers as layers
-from config import config
+from calligraphyGAN_config import config
 
 
 class Conv(tf.keras.Model):
@@ -209,3 +209,31 @@ class CalligraphyGAN(keras.Model):
         self.discriminator = Discriminator()
         self.generator = Generator()
         self.class_embed = ClassEmbedding()
+
+    def generate_images(self, vector, number):
+        label = np.array([0] * config.class_dim)
+        for idx in vector:
+            label[idx] = 1
+        label = np.reshape(label, (-1, 1, 1, config.class_dim))
+        label_embed = self.class_embed(label, training=False)
+
+        sample_condition = tf.concat([label_embed] * number, axis=0)
+
+        z = tf.random.uniform([number, 1, 1, config.noise_dim], minval=-1., maxval=1.)
+
+        images = self.generator(z, sample_condition, training=False)
+
+        return images.numpy()
+
+    def generate_one_image(self, topk_idx):
+        label = np.array([0] * config.class_dim)
+        for idx in topk_idx:
+            label[idx] = 1
+        label = np.reshape(label, (-1, 1, 1, config.class_dim))
+
+        z = tf.random.uniform([1, 1, 1, config.noise_dim], minval=-1., maxval=1.)
+
+        label_embed = self.class_embed(label, training=False)
+        generated = self.generator(z, label_embed, training=False)
+
+        return generated.numpy()

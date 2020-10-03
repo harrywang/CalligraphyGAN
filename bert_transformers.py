@@ -13,13 +13,16 @@ class BertQuery:
         """
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
         self.model = TFBertModel.from_pretrained('bert-base-chinese', cache_dir=model_dir)
-        self.doc_vecs = []
+        # self.doc_vecs = []
 
-        for word in words:
-            temp_output = self.model(tf.constant(self.tokenizer.encode(word, add_special_tokens=True))[None, :])
-            self.doc_vecs.append(temp_output[1])
-        self.doc_vecs = np.array(self.doc_vecs)
-        self.doc_vecs = np.squeeze(self.doc_vecs, axis=(1,))
+        # for i, word in enumerate(words):
+        #     print('%d / %d' % (i, len(words)))
+        #     temp_output = self.model(tf.constant(self.tokenizer.encode(word, add_special_tokens=True))[None, :])
+            # self.doc_vecs.append(temp_output[1])
+        # self.doc_vecs = np.array(self.doc_vecs)
+        # self.doc_vecs = np.squeeze(self.doc_vecs, axis=(1,))
+        # np.save('bq-result.npy', self.doc_vecs)
+        self.doc_vecs = np.load('bq-result.npy')
 
     def query(self, text, topk=10):
         query = str(time.time()) + text
