@@ -12,10 +12,18 @@ from aestheic_filter import WhiteSpaceFilter
 @st.cache(allow_output_mutation=True)
 def init():
     # init menu images
-    menu_images_path = './menu_image'
-    menu_images = {}
-    for item in os.listdir(menu_images_path):
-        menu_images[item.split('.')[0]] = os.path.join(menu_images_path, item)
+    # menu_images_path = './menu_image'
+    # menu_images = {}
+    # for item in os.listdir(menu_images_path):
+    #     menu_images[item.split('.')[0]] = os.path.join(menu_images_path, item)
+
+    menu_images = {
+        '白灼生菜 Boiled Lettuce': './menu_image/Boiled Lettuce.png',
+        '法式意大利黑醋带鱼 Italian Black Vinegar Hairtail': './menu_image/Italian Black Vinegar Hairtail.png',
+        '家烧三门青膏蟹 Homemade Style Green Crabs': './menu_image/Homemade Style Green Crabs.png',
+        '椒香美味裙 Roasted Scollop Apron': './menu_image/Roasted Scollop Apron.png',
+        '松仁丝瓜尖 Luffa Seedlings with Pine Nuts': './menu_image/Luffa Seedlings with Pine Nuts.png',
+    }
 
     # init styles
     styles = get_style_dict()
@@ -122,6 +130,7 @@ def main():
 
             # denoise and resize
             _, denoised_img = resize_and_denoise(img, (300, 300), white_threshold)
+            denoised_img = (255. - denoised_img).astype(np.uint8)
 
             denoised_image_ph.image(denoised_img, width=300,
                                     caption='generated from %s' % ','.join([words[idx] for idx in topk_idx]))

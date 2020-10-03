@@ -1,10 +1,12 @@
-from model import CGAN
+# from model import CGAN
 from denoise import resize_and_denoise
 from style_transfer import Stylizer
 import cv2
 from utils import words
 from bert_transformers import BertQuery
 from aestheic_filter import WhiteSpaceFilter
+from calligraphyGAN import CalligraphyGAN
+from calligraphyGAN_config import config
 
 
 class AIMenu:
@@ -13,13 +15,15 @@ class AIMenu:
     """
 
     def __init__(self, result_path='./static/tmp'):
-        checkpoint_dir = './ckpt'
+        checkpoint_path = './ckpt/calligraphy-gan-3000/ckpt-11'
 
-        self.cgan = CGAN()
+        # self.cgan = CGAN()
+        self.cgan = CalligraphyGAN()
+        self.cgan.load_weights(checkpoint_path).expect_partial()
+
         self.bcq = BertQuery(model_dir='./ckpt/transformers')
         self.stylizer = Stylizer()
 
-        self.cgan.reload(checkpoint_dir)
         self.result_path = result_path
 
     def get_topk_idx(self, description, topk=10):

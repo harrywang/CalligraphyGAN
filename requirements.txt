@@ -1,6 +1,6 @@
 threadpool
 numpy
-tensorflow==2.0.0
+tensorflow==2.3.0
 pillow
 matplotlib
 opencv-python
@@ -9,8 +9,8 @@ tensorflow_hub
 inquirer
 keras
 scikit-image
-streamlit==0.55.0
+streamlit==0.67.1
 scikit-learn
-transformers
+transformers==2.5.1
 flask
 flask-restful
