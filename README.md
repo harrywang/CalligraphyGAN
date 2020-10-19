@@ -12,8 +12,8 @@ The whole framework is composed of 3 parts -- **Bert**, **CalligraphyGAN** and *
 
 ### Dataset
 
-More infomation for dataset on [Chinese Calligraphy Dataset](https://github.com/zhuojg/chinese-calligraphy-dataset).  
-We use 1000 characters in this datset to test our framework.
+More information for dataset on [Chinese Calligraphy Dataset](https://github.com/zhuojg/chinese-calligraphy-dataset).  
+We use 1000 characters in this dataset to test our framework.
 
 ### Bert
 >adapted based on https://github.com/huggingface/transformers  
