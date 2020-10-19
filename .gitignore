@@ -124,6 +124,8 @@ static/tmp/
 data/
 cv/
 FID/
+example/
+evaluation/
 
 # static
 static/
