@@ -121,7 +121,9 @@ ckpt/
 static/tmp/
 
 # data
-data/*.h5*
+data/
+cv/
+FID/
 
 # static
 static/
