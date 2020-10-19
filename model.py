@@ -1,24 +1,16 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-import os
-import sys
+"""
+This is the first version of the CalligraphyGAN.
+We use 100 characters to train this model.
+The structure of the CGAN in this file is similar to the final version of CalligraphyGAN.
+"""
 import time
-import glob
-import numpy as np
-import matplotlib.pyplot as plt
-import PIL
-import imageio
 import tensorflow as tf
 from tensorflow.keras import layers
 from utils import *
 import pathlib
-import random
 
 # Training Flags (hyperparameter configuration)
-train_dir = './ckpt'
+checkpoint_dir = train_dir = './ckpt'
 
 max_epochs = 100
 save_model_epochs = 10
@@ -227,7 +219,6 @@ class CGAN:
         checkpoint_dir = train_dir
         if not tf.io.gfile.exists(checkpoint_dir):
             tf.io.gfile.makedirs(checkpoint_dir)
-        checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
         self.checkpoint = tf.train.Checkpoint(generator_optimizer=self.generator_optimizer,
                                               discriminator_optimizer=self.discriminator_optimizer,
                                               generator=self.generator,
