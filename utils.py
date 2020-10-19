@@ -1,28 +1,11 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio
-from PIL import Image
 from skimage.transform import resize
-import cv2
 from sklearn.cluster import KMeans
-import utils
 import cv2
 
-words_bak = ['且', '世', '东', '九', '亭', '今', '从', '令', '作', '使',
-             '侯', '元', '光', '利', '印', '去', '受', '右', '司', '合',
-             '名', '周', '命', '和', '唯', '堂', '士', '多', '夜', '奉',
-             '女', '好', '始', '字', '孝', '守', '宗', '官', '定', '宜',
-             '室', '家', '寒', '左', '常', '建', '徐', '御', '必', '思',
-             '意', '我', '敬', '新', '易', '春', '更', '朝', '李', '来',
-             '林', '正', '武', '氏', '永', '流', '海', '深', '清', '游',
-             '父', '物', '玉', '用', '申', '白', '皇', '益', '福', '秋',
-             '立', '章', '老', '臣', '良', '莫', '虎', '衣', '西', '起',
-             '足', '身', '通', '遂', '重', '陵', '雨', '高', '黄', '鼎']
 
 words = ['一', '丁', '七', '万', '丈', '三', '上', '下', '不', '与', '丑', '且', '世', '丘', '丙', '业', '东', '丝', '丞', '两', '严', '中',
          '丰', '临', '丹', '为', '主', '丽', '举', '乃', '久', '么', '义', '之', '乍', '乎', '乐', '乘', '乙', '九', '也', '乡', '书', '乱',
@@ -71,18 +54,9 @@ words = ['一', '丁', '七', '万', '丈', '三', '上', '下', '不', '与', '
          '饥', '饭', '饮', '馀', '馆', '首', '香', '马', '驰', '骑', '骨', '高', '髮', '鬼', '魂', '魏', '鱼', '鲁', '鸟', '鸣', '鸿', '鹅',
          '鹤', '鹿', '黄', '黑', '鼓', '鼠', '齐', '齿', '龙', '龟']
 
-# styles = {
-#     'Dekooning': './style_image/dekooning.jpg',
-#     'Picasso': './style_image/picasso.jpg',
-#     'Pollock': './style_image/pollock.jpg',
-#     'Rousseau': './style_image/rousseau.jpg',
-#     'Rothko': './style_image/rothko.jpg'
-# }
-
-style_image_path = './style_image'
-
 
 def get_style_dict():
+    style_image_path = './style_image'
     result = {}
     for item in os.listdir(style_image_path):
         result[item.split('.')[0]] = os.path.join(style_image_path, item)
@@ -118,11 +92,10 @@ def color_cluster(image_path, topk=5):
     clt = KMeans(n_clusters=topk)
     clt.fit(image)
 
-    # below is the code to visualize the resultsv
+    # below is the code to visualize the results
     # plt.figure()
     # plt.axis("off")
     # plt.imshow(image)
-    #
     def centroid_histogram(clt):
         # grab the number of different clusters and create a histogram
         # based on the number of pixels assigned to each cluster

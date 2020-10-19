@@ -5,18 +5,12 @@ from ai_menu import AIMenu
 from denoise import resize_and_denoise
 import cv2
 from utils import words, color_cluster, get_style_dict
-import os
 from aestheic_filter import WhiteSpaceFilter
 
 
 @st.cache(allow_output_mutation=True)
 def init():
     # init menu images
-    # menu_images_path = './menu_image'
-    # menu_images = {}
-    # for item in os.listdir(menu_images_path):
-    #     menu_images[item.split('.')[0]] = os.path.join(menu_images_path, item)
-
     menu_images = {
         '白灼生菜 Boiled Lettuce': './menu_image/Boiled Lettuce.png',
         '法式意大利黑醋带鱼 Italian Black Vinegar Hairtail': './menu_image/Italian Black Vinegar Hairtail.png',
@@ -40,30 +34,27 @@ def color_cluster_wrapper(image_path, topk=5):
 
 def main():
     menu_images, styles, ai_menu = init()
-    st.title('Food + Calligraphy + AI')
-    st.header('Beautiful Enough to Feast the Eyes (秀色可餐)')
-
+    st.title('Abstract Art via CalligraphyGAN')
     st.sidebar.title('Configuration')
-
     st.sidebar.subheader('Dish Name')
 
-    def convert_flag(x):
+    # convert flag (True or False) to corresponding instruction
+    def convert_flag_to_instruction(x):
         if x:
             return 'Choose an existing dish'
         else:
             return 'Type my own dish name in Chinese'
 
-    flag = st.sidebar.radio(label='', options=(True, False), format_func=convert_flag)
+    use_existing_name = st.sidebar.radio(label='', options=(True, False), format_func=convert_flag_to_instruction)
     target_color = None
 
-    if flag:
+    if use_existing_name:
         dish_name = st.sidebar.selectbox(label='Select a dish name', options=tuple(menu_images.keys()))
         st.image(menu_images[dish_name], width=300, caption=dish_name)
     else:
         dish_name = st.sidebar.text_input('Input your dish name', '鱼香肉丝')
 
     st.sidebar.subheader('Style')
-
     style_name = st.sidebar.radio(
         label="Choose a style for style transfer.",
         options=list(styles.keys()),
@@ -114,18 +105,19 @@ def main():
         oil_image_ph = st.empty()
         with st.spinner('Generating...'):
             # do not denoise the image for better performance
-            if flag:
+            if use_existing_name:
                 color_image, target_color = color_cluster_wrapper(menu_images[dish_name], topk=number_color)
                 color_cluster_image.image(color_image, width=300, caption='color cluster')
                 target_color = np.array(target_color) / 255.
 
             topk_idx = ai_menu.get_topk_idx(dish_name, topk=number_characters * 2)[number_characters:]
-            used_words.markdown('The model uses **%s** to generate the image.' % ','.join([words[idx] for idx in topk_idx]))
+            used_words.markdown(
+                'The model uses **%s** to generate the image.' % ','.join([words[idx] for idx in topk_idx]))
 
             filters = [
                 WhiteSpaceFilter(t_min=white_space_lower, t_max=white_space_upper, white_threshold=white_threshold)
             ]
-            # TODO: How to show result when all generated result are filtered.
+            # TODO: How to show result when all generated result are filtered
             img = ai_menu.generate_character_with_filter(topk_idx=topk_idx, number=100, filters=filters, topk=1)[0]
 
             # denoise and resize
@@ -139,10 +131,12 @@ def main():
                                                   content_img=denoised_img,
                                                   output_size=300)
 
-            stylized_image_ph.image(stylized_img, width=300, caption='Generated image stylized based on %s' % style_name)
+            stylized_image_ph.image(stylized_img, width=300,
+                                    caption='Generated image stylized based on %s' % style_name)
 
             op = OilPaint(image=cv2.cvtColor(np.array(denoised_img), cv2.COLOR_RGB2BGR),
                           target_color=target_color)
+
             # smaller number for epoch and batch_size for better performance
             oil_img = op.paint(epoch=10, batch_size=32, result_dir=None) / 255.
 

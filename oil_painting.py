@@ -8,7 +8,7 @@ from utils import cv_read_img_BGR as imread
 import threadpool as tp
 
 
-# part of static methods
+# "ReLU"
 def lc(x):
     return int(max(0, x))
 
@@ -48,7 +48,7 @@ def limit(x, minimum, maximum):
 
 # Brush Factory
 class BrushFactory:
-    def __init__(self, brush_dir='./cv/brushes'):
+    def __init__(self, brush_dir='./brushes'):
         self.brush_dir = brush_dir
         self.brushes = {}
         self._load_brush()
@@ -129,7 +129,7 @@ class OilPaint:
         self.canvas_lock.acquire()
         self.canvas_lock.release()
 
-        self.bf = BrushFactory(brush_dir='./cv/brushes')
+        self.bf = BrushFactory(brush_dir='./brushes')
 
         self.bp_filter = np.array([13, 3, 7.]).astype('float32')
 
@@ -140,7 +140,7 @@ class OilPaint:
         self.radius_delta = 5.
 
     def _positive_sharpen(self, i, over_blur=False, coeff=8.):  # no darken to original image
-        # emphasize the edges
+        # emphasize the edges d
         blurred = cv2.blur(i, (5, 5))
         sharpened = i + (i - blurred) * coeff
         if over_blur:
@@ -602,33 +602,3 @@ class OilPaint:
                     os.path.join(result_dir, '%d.png' % i))
 
         return np.array(self.canvas * 255)
-
-
-if __name__ == '__main__':
-    result_path = '../oil_test_result'
-    with open('./cv/recepit_color.txt', encoding='utf-8') as f:
-        data = f.readlines()
-        color = {}
-        for line in data:
-            temp_data = line[:-1].split(',')
-            folder_name = temp_data[0]
-            color[folder_name] = []
-            temp_color = []
-            for i in range(1, len(temp_data)):
-                temp_color.append(temp_data[i])
-                if len(temp_color) == 3:
-                    color[folder_name].append(temp_color)
-                    temp_color = []
-            n = int(len(color[folder_name]) / 2)
-            for j in range(0, n + 1):
-                color[folder_name].append(color[folder_name][0])
-
-        target_color = []
-        for co in color['奶油番茄配七彩时蔬、龙虾肉']:
-            target_color.append([float(co[2]) / 255., float(co[1]) / 255., float(co[0]) / 255.])
-
-        op = OilPaint(
-            image=imread("C:\\Users\\jing\\Programming\\ai-recepit-art\\1020_result"
-                         "\\奶油番茄配七彩时蔬、龙虾肉\\1571286983_convert.png"),
-            target_color=target_color)
-        op.paint(epoch=30, batch_size=64, result_dir='C:\\Users\\jing\\Desktop\\test')
