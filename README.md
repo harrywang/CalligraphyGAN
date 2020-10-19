@@ -15,7 +15,7 @@ The whole framework is composed of 3 parts -- **Bert**, **CGAN** and **Oil Paint
 We use 100 Chinese characters to test our framework.  
 
 Examples from the dataset (Chinese character 好):  
-![dataset_sample](https://i.ibb.co/HBNy5T7/dataset-sample.png)
+![dataset_sample](images/dataset_sample.png)
 ### Bert
 >adapted based on https://github.com/huggingface/transformers  
 
@@ -50,7 +50,7 @@ If you already have image of this project (`zhuojg1519/ai-recepit-art`), make su
 >```
 
 Then visit `http://localhost:8501` to enjoy the magic.  
-<div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
+<div align=center><img width="500" src="images/web_demo.png" /></div>
 
 
 ## Setup on Localhost
@@ -90,17 +90,17 @@ Finishing up...
 ```
 Sample outputs. They are GAN result, result after noise reduction, result after oil painting,
 result after style transfer and style image respectively.  
-![1579404347_final](https://i.ibb.co/ZLr8xyt/1579404347-final.jpg)
+![1579404347_final](images/1579404347-final.jpg)
 
 ## Run and test the API
 Run `python api.py` to start a Flask dev server to serve the API at localhost:5000, you can use Postman to test the API as follows:  
 Add `params` as showed in picture (or add parameters using form-data), and post.  
-![api_test](https://i.ibb.co/qsxrrsZ/api-test.png)
+![api_test](images/api_test.png)
 * Finally you will get response with 2 fake urls, one for original image, one for stylized image.
 * The result is stored in `ai-recepit-art/result`.  
 * Here are some results:  
-<div align=center><img width="200" height="200" src="https://i.ibb.co/dmRVP9m/1579412691-convert.png" alt="original"/></div>
-<div align=center><img width="200" height="200" src="https://i.ibb.co/KX0HbW5/1579412691-stylized.png" alt="stylized"/></div>
+<div align=center><img width="200" height="200" src="images/1579412691-convert.png" alt="original"/></div>
+<div align=center><img width="200" height="200" src="images/1579412691-stylized.png" alt="stylized"/></div>
 
 ## Web Demo with Streamlit
 We use [Streamlit](https://www.streamlit.io/) to build a demo to show our model.
@@ -109,4 +109,4 @@ We use [Streamlit](https://www.streamlit.io/) to build a demo to show our model.
 streamlit run st_demo.py
 ```
 Now you can visit `localhost:8501` to enjoy it.
-<div align=center><img width="500" src="https://i.ibb.co/5WpHBVW/web-demo-new.png" /></div>
+<div align=center><img width="500" src="images/web_demo.png" /></div>
