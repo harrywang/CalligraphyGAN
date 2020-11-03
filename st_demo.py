@@ -216,7 +216,7 @@ def main():
                                     caption='Generated image stylized based on %s' % style_name)
 
             op = OilPaint(image=cv2.cvtColor(np.array(denoised_img), cv2.COLOR_RGB2BGR),
-                          target_color=target_color)
+                          target_color=target_color, brush_dir='./data/brushes')
 
             # smaller number for epoch and batch_size for better performance
             oil_img = op.paint(epoch=10, batch_size=32, result_dir=None) / 255.

@@ -12,6 +12,8 @@ We propose a creative framework based on Conditional Generative Adversarial Netw
 
 Input a description in Chinese, and you can get a image representing these Chinese characters.  
 
+<div align=center><img width="500" src="images/1579404347-final.jpg" /></div>
+
 The whole framework is composed of 3 parts -- **CalligraphyGAN**, **Bert** and **Oil Painting**.  
 
 <div align=center><img width="500" src="images/framework.png" /></div>
@@ -92,6 +94,8 @@ streamlit run st_demo.py
 ```
 
 Then visit `localhost:8501` to enjoy it.
+
+<div align=center><img width="500" src="images/web_demo.png" /></div>
 
 ## Training New Models
 

@@ -102,7 +102,7 @@ class BrushFactory:
 
 
 class OilPaint:
-    def __init__(self, image, target_color=None):
+    def __init__(self, image, target_color=None, brush_dir='./brushes'):
         """
 
         :param image: cv2 format Image dataset
@@ -128,7 +128,7 @@ class OilPaint:
         self.canvas_lock.acquire()
         self.canvas_lock.release()
 
-        self.bf = BrushFactory(brush_dir='data/brushes')
+        self.bf = BrushFactory(brush_dir=brush_dir)
 
         self.bp_filter = np.array([13, 3, 7.]).astype('float32')
 
