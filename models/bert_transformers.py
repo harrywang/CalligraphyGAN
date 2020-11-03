@@ -2,6 +2,7 @@ import tensorflow as tf
 from transformers import TFBertModel, BertTokenizer
 import numpy as np
 import time
+from models.calligraphyGAN_dataset import _get_embedding
 
 
 class BertQuery:
@@ -16,10 +17,10 @@ class BertQuery:
         if bq_result_path is None:
             self.doc_vecs = []
 
-            words = []
-            with open('./data/words.txt', encoding='utf-8') as f:
-                for line in f.readlines():
-                    words.append(line[:-1])
+            words = _get_embedding('./data/label_character.csv')
+            # _get_embedding return the dict like { ..., character: embedding, ... }
+            # convert to a list like [ ..., character, ... ]
+            words = list(words.keys())
 
             for i, word in enumerate(words):
                 print('%d / %d' % (i, len(words)))

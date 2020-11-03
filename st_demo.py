@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 from models.oil_painting import OilPaint
+from models.calligraphyGAN_dataset import _get_embedding
 from ai_menu import AIMenu
 from utils.denoise import resize_and_denoise
 import cv2
@@ -96,10 +97,10 @@ def init():
     # init AIMenu for image generating
     ai_menu = AIMenu(result_path='./static/tmp', bert_model_path='./ckpt/transformers')
 
-    words = []
-    with open('./data/words.txt', encoding='utf-8') as f:
-        for line in f.readlines():
-            words.append(line[:-1])
+    words = _get_embedding('./data/label_character.csv')
+    # _get_embedding return the dict like { ..., character: embedding, ... }
+    # convert to a list like [ ..., character, ... ]
+    words = list(words.keys())
 
     return menu_images, styles, ai_menu, words
 

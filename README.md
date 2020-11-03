@@ -87,7 +87,7 @@ We use [Streamlit](https://www.streamlit.io/) to implement our web demo.
 docker run -d -p 8501:8501 zhuojg1519/calligraphy.ai
 ```
 
-- On local machine, run `st_demo.py` with streamlit.  
+- On local machine, run `st_demo.py` with Streamlit.  
 
 ```shell
 streamlit run st_demo.py
@@ -97,16 +97,34 @@ Then visit `localhost:8501` to enjoy it.
 
 <div align=center><img width="500" src="images/web_demo.png" /></div>
 
-## Training New Models
+## Training Model
+
+- Download 1000 characters we use from [Google Drive](https://drive.google.com/file/d/14xsoRphUO3YSFz6IwD8IKyeCfYNwonf8/view?usp=sharing),
+and move files to `calligraphy.ai/data`. So, the directory tree should be:  
+```shell
+...
+├── data
+│   ├── chinese-calligraphy-1000.zip
+...
+```
+
+- Unzip the dataset
+```shell
+unzip chinese-calligraphy-1000.zip
+```
+
+Then
 
 - With docker, specify COMMAND to train in the background, and use `docker logs` to print logs.  
 
+> If you have GPUs, make sure you have configured docker properly.  
+
 ```shell
-docker run -d -t -v `pwd`:/usr/src/calligraphy-ai --name="calligraphy.ai" zhuojg1519/calligraphy.ai python calligraphGAN_train.py
+docker run -d -t -v `pwd`:/usr/src/calligraphy-ai --name="calligraphy.ai" zhuojg1519/calligraphy.ai python train.py
 docker logs -f calligraphy.ai
 ```
 
-- On local machine, run calligraphyGAN_train.py to start training.  
+- On local machine, run `train.py` to start training.  
 ```shell
-python calligraphyGAN_train.py
+python train.py
 ```
