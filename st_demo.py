@@ -1,11 +1,82 @@
 import streamlit as st
 import numpy as np
-from oil_painting import OilPaint
+from models.oil_painting import OilPaint
 from ai_menu import AIMenu
-from denoise import resize_and_denoise
+from utils.denoise import resize_and_denoise
 import cv2
-from utils import words, color_cluster, get_style_dict
-from aestheic_filter import WhiteSpaceFilter
+from utils.aestheic_filter import WhiteSpaceFilter
+import os
+from sklearn.cluster import KMeans
+
+
+def get_style_dict():
+    style_image_path = './style_image'
+    result = {}
+    for item in os.listdir(style_image_path):
+        result[item.split('.')[0]] = os.path.join(style_image_path, item)
+
+    return result
+
+
+# function to get topk color in image
+def color_cluster(image_path, topk=5):
+    """
+    get top-k colors in an image
+    :param topk:
+    :param image_path:
+    :return:
+    """
+    image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    image = image.reshape((image.shape[0] * image.shape[1], 3))
+    # cluster the pixel intensities
+    clt = KMeans(n_clusters=topk)
+    clt.fit(image)
+
+    # below is the code to visualize the results
+    # plt.figure()
+    # plt.axis("off")
+    # plt.imshow(image)
+    def centroid_histogram(clt):
+        # grab the number of different clusters and create a histogram
+        # based on the number of pixels assigned to each cluster
+        numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
+        (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+        # normalize the histogram, such that it sums to one
+        hist = hist.astype("float")
+        hist /= hist.sum()
+        # return the histogram
+        return hist
+
+    def plot_colors(hist, centroids):
+        # initialize the bar chart representing the relative frequency
+        # of each of the colors
+        bar = np.zeros((50, 300, 3), dtype="uint8")
+        startX = 0
+        # loop over the percentage of each cluster and the color of
+        # each cluster
+        for (percent, color) in zip(hist, centroids):
+            # plot the relative percentage of each cluster
+            endX = startX + (percent * 300)
+            cv2.rectangle(bar, (int(startX), 0), (int(endX), 50),
+                          color.astype("uint8").tolist(), -1)
+            startX = endX
+
+        # return the bar chart
+        return bar
+
+    # build a histogram of clusters and then create a figure
+    # representing the number of pixels labeled to each color
+    hist = centroid_histogram(clt)
+    bar = plot_colors(hist, clt.cluster_centers_)
+
+    return bar, clt.cluster_centers_
+    # # show our color bart
+    # plt.figure()
+    # plt.axis("off")
+    # plt.imshow(bar)
+    # plt.show()
 
 
 @st.cache(allow_output_mutation=True)
@@ -23,8 +94,14 @@ def init():
     styles = get_style_dict()
 
     # init AIMenu for image generating
-    ai_menu = AIMenu(result_path='./static/tmp')
-    return menu_images, styles, ai_menu
+    ai_menu = AIMenu(result_path='./static/tmp', bert_model_path='./ckpt/transformers')
+
+    words = []
+    with open('./data/words.txt', encoding='utf-8') as f:
+        for line in f.readlines():
+            words.append(line[:-1])
+
+    return menu_images, styles, ai_menu, words
 
 
 @st.cache(allow_output_mutation=False)
@@ -33,7 +110,11 @@ def color_cluster_wrapper(image_path, topk=5):
 
 
 def main():
-    menu_images, styles, ai_menu = init()
+    # create some folders
+    if not os.path.exists('./static/tmp'):
+        os.makedirs('./static/tmp')
+
+    menu_images, styles, ai_menu,words = init()
     st.title('Abstract Art via CalligraphyGAN')
     st.sidebar.title('Configuration')
     st.sidebar.subheader('Dish Name')

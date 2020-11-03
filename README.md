@@ -1,71 +1,108 @@
-# Abstract Art via CalligraphyGAN  
+# A Framework and Dataset for Abstract Art Generation via CalligraphyGAN  
 
-[demo](http://54.223.165.220:8501)  
+This is the code for the paper
 
-## Introduction
-This is the implementation of *A Framework and Dataset for Abstract Art Generation via CalligraphyGAN*, 
-for [NeurIPS Workshop, Machine Learning for Creativity and Design](https://neurips2020creativity.github.io/).  
+**A Framework and Dataset for Abstract Art Generation via CalligraphyGAN**  
+Jinggang Zhuo, Harry Jiannan Wang, Ling Fan  
+Presented at [NeurIPS Workshop, Machine Learning for Creativity and Design](https://neurips2020creativity.github.io/).  
 
-This is a creative framework based on Conditional Generative Adversarial Networks and Contextual Neural Language Model to generate artworks that have intrinsic meaning and aesthetic value.
+[paper]() | [demo](http://54.223.165.220:8501)  
 
-Input a dish name or description in Chinese, and we can get a image representing these Chinese characters.  
+We propose a creative framework based on Conditional Generative Adversarial Networks and Contextual Neural Language Model to generate artworks that have intrinsic meaning and aesthetic value.
 
-The whole framework is composed of 3 parts -- **Bert**, **CalligraphyGAN** and **Oil Painting**.
+Input a description in Chinese, and you can get a image representing these Chinese characters.  
 
-### Dataset
+The whole framework is composed of 3 parts -- **CalligraphyGAN**, **Bert** and **Oil Painting**.  
 
-More information for dataset on [Chinese Calligraphy Dataset](https://github.com/zhuojg/chinese-calligraphy-dataset).  
-We use 1000 characters in this dataset to test our framework.
+<div align=center><img width="500" src="images/framework.png" /></div>
 
-### Bert
+## Model
+
+### CalligraphyGAN  
+
+In this part, we use 1000 Chinese characters in [Chinese Calligraphy Dataset](https://github.com/zhuojg/chinese-calligraphy-dataset)
+ as training data to train a generator.  
+This generator is based on conditional GAN and take a 1000-dimensional vector as input. Each dimension in this 
+vector represents the weight of each Chinese character in the data set.
+
+### Bert  
+
 >adapted based on https://github.com/huggingface/transformers  
 
-In this part, we developed a simple algorithm based on BERT to map the input text with arbitrary number of characters into five characters from the 100 characters.
+In this part, we developed a simple algorithm based on BERT to map the input text with arbitrary number of characters into five characters from the 1000 characters used in GAN.
 
-### CalligraphyGAN
-In this part, we use 1000 Chinese characters as training data to train a generator.  
-This generator take a 1000-dimensional vector as input,
-and each dimension in this vector represents the weight of each Chinese character in the data set.
+### Oil Painting  
 
-### Oil Painting
 >adapted based on by https://github.com/ctmakro/opencv_playground  
 
-In this part, we convert generated image into oil painting.
+In this part, we convert generated image into oil painting.  
 
-## Web Demo  
+## Setup  
 
-We use [Streamlit](https://www.streamlit.io/) to build a demo to show our model, and we have deployed it [here](http://54.223.165.220:8501).
-
-<div align=center><img width="500" src="images/web_demo.png" /></div>
-
-You can also run demo by yourself following the instruction below:
+Follow the instructions, you can run web demo or train the model on your machine.  
 
 ### Using Docker  
 
-We have packaged our web demo using Docker, just make sure you have Docker installed correctly.  
-```shell script
-docker run -d -p 8501:8501 zhuojg1519/calligraphy.ai
+Make sure you have Docker installed correctly, and pull the image by
+```shell
+docker pull zhuojg1519/calligraphy.ai
 ```
-
-Then visit `http://localhost:8501` to enjoy the magic.  
+Source code and pretrained model are all included in this image.
 
 ### Setup on Local  
 
-- Change to directory of `calligraphy.ai`  
-- Download checkpoint from https://drive.google.com/drive/folders/1W42ZRVCr3o2I_xwUNZFY_AQp4juUSahR?usp=sharing, 
-and move files to `calligraphy.ai/ckpt`  
+- Clone the repo and change directory to it
 
-- Setup the virtual environment and folders  
+```shell
+git clone https://github.com/harrywang/calligraphy.ai.git
+cd calligraphy.ai
+```
+
+- Download checkpoint from [Google Drive](https://drive.google.com/drive/folders/1p7rDUKU_43WbdoKSE5iRKf2decnWTt-B?usp=sharing), 
+and move files to `calligraphy.ai/ckpt`. So, the directory tree should be:  
+```shell
+...
+├── ckpt
+│   ├── ckpt-11.data-00000-of-00001
+│   ├── ckpt-11.index
+...
+```
+
+- Setup the virtual environment  
 ```shell
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-mkdir result
-mkdir ckpt
 ```
 
-- Then run
-```shell script
+## Running Web Demo  
+
+We use [Streamlit](https://www.streamlit.io/) to implement our web demo.  
+
+- With docker, run the container and expose the port 8501.  
+
+```shell
+docker run -d -p 8501:8501 zhuojg1519/calligraphy.ai
+```
+
+- On local machine, run `st_demo.py` with streamlit.  
+
+```shell
 streamlit run st_demo.py
 ```
-- Now you can visit `localhost:8501` to enjoy it.
+
+Then visit `localhost:8501` to enjoy it.
+
+## Training New Models
+
+- With docker, specify COMMAND to train in the background, and use `docker logs` to print logs.  
+
+```shell
+docker run -d -t -v `pwd`:/usr/src/calligraphy-ai --name="calligraphy.ai" zhuojg1519/calligraphy.ai python calligraphGAN_train.py
+docker logs -f calligraphy.ai
+```
+
+- On local machine, run calligraphyGAN_train.py to start training.  
+```shell
+python calligraphyGAN_train.py
+```

@@ -1,8 +1,8 @@
-from denoise import resize_and_denoise
-from style_transfer import Stylizer
+from utils.denoise import resize_and_denoise
+from utils.style_transfer import Stylizer
 import cv2
-from bert_transformers import BertQuery
-from calligraphyGAN import CalligraphyGAN
+from models.bert_transformers import BertQuery
+from models.calligraphyGAN import CalligraphyGAN
 import os
 
 
@@ -12,12 +12,12 @@ class AIMenu:
     """
 
     def __init__(self, result_path='./static/tmp', bert_model_path='./ckpt/transformers'):
-        checkpoint_path = './ckpt/calligraphy-gan-3000/ckpt-11'
+        checkpoint_path = './ckpt/calligraphy-gan/ckpt-11'
 
         self.cgan = CalligraphyGAN()
         self.cgan.load_weights(checkpoint_path).expect_partial()
 
-        self.bcq = BertQuery(model_dir=bert_model_path)
+        self.bcq = BertQuery(model_dir=bert_model_path, bq_result_path='./data/bq-result.npy')
         self.stylizer = Stylizer()
 
         if not os.path.exists(result_path):

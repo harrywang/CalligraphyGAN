@@ -15,7 +15,7 @@ class Config:
         self.class_dim = 1000
         self.image_size = 224
         self.checkpoint_dir = './checkpoints'
-        self.example_dir = './example'
+        self.example_dir = 'example'
 
 
 config = Config()

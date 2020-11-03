@@ -4,7 +4,6 @@ import math
 import random
 import threading
 import os
-from utils import cv_read_img_BGR as imread
 import threadpool as tp
 
 
@@ -106,7 +105,7 @@ class OilPaint:
     def __init__(self, image, target_color=None):
         """
 
-        :param image: cv2 format Image data
+        :param image: cv2 format Image dataset
         :param target_color: the value is between [0., 1.]
         """
         if target_color is not None:
@@ -129,7 +128,7 @@ class OilPaint:
         self.canvas_lock.acquire()
         self.canvas_lock.release()
 
-        self.bf = BrushFactory(brush_dir='./brushes')
+        self.bf = BrushFactory(brush_dir='data/brushes')
 
         self.bp_filter = np.array([13, 3, 7.]).astype('float32')
 

@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 from tensorflow.keras import layers as layers
-from calligraphyGAN_config import config
+from models.calligraphyGAN_config import config
 
 
 class Conv(tf.keras.Model):
