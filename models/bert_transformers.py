@@ -11,7 +11,7 @@ class BertQuery:
 
         :param model_dir: if no cached model in this dir, transformers will download them automatically
         """
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-chinese', cache_dir=model_dir)
         self.model = TFBertModel.from_pretrained('bert-base-chinese', cache_dir=model_dir)
 
         if bq_result_path is None:
