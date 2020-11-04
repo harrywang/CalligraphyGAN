@@ -117,7 +117,8 @@ Then
 
 - With docker, specify COMMAND to train in the background, and use `docker logs` to print logs.  
 
-> If you have GPUs, make sure you have configured docker properly.  
+> If you want to use GPUs on Linux, 
+>make sure you have installed [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker).  
 
 ```shell
 docker run -d -t -v `pwd`:/usr/src/calligraphy-ai --name="calligraphy.ai" zhuojg1519/calligraphy.ai python train.py
@@ -128,3 +129,5 @@ docker logs -f calligraphy.ai
 ```shell
 python train.py
 ```
+
+You can change training configuration in `models/calligraphyGAN_config.py`

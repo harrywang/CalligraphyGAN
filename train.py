@@ -89,7 +89,6 @@ def train_step(images, labels):
 
 # keeping the random vector constant for generation (prediction) so
 # it will be easier to see the improvement of the gan.
-# To visualize progress in the animated GIF
 const_random_vector_for_saving = tf.random.uniform([config.num_examples_to_generate, 1, 1, config.noise_dim],
                                                    minval=-1., maxval=1.)
 
@@ -164,12 +163,13 @@ def train():
 
             if global_step.numpy() & config.print_steps == 0:
                 duration = time.time() - start_time
-                examples_per_sec = config.batch_size / float(duration)
+                examples_per_sec = config.batch_size * global_step.numpy() / float(duration)
+                sec_per_batch = float(duration) / global_step.numpy()
+                epoch_num = global_step.numpy() * config.batch_size / len(ds)
 
-                # TODO: Epochs number do not increase, sec/batch is not right, examples/sec is not right
                 print(
                     "Epochs: {:.2f} global_step: {} loss_D: {:.3g} loss_G: {:.3g} ({:.2f} examples/sec; {:.3f} sec/batch)".format(
-                        epoch, global_step.numpy(), disc_loss, gen_loss, examples_per_sec, duration))
+                        epoch_num, global_step.numpy(), disc_loss, gen_loss, examples_per_sec, sec_per_batch))
 
         if (epoch + 1) % config.save_images_epochs == 0:
             condition_embed = class_embed(sample_condition, training=False)
@@ -177,7 +177,7 @@ def train():
             print_or_save_sample_images(sample_images.numpy(), config.num_examples_to_generate,
                                         is_square=True, is_save=True, epoch=epoch + 1,
                                         example_dir=config.example_dir)
-            print("This images are saved at {} epoch".format(epoch + 1))
+            print("These images are saved at {} epoch".format(epoch + 1))
 
         if (epoch + 1) % config.save_model_epochs == 0:
             ckpt_save_path = manager.save()
