@@ -7,20 +7,32 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-ds = CalligraphyDataset(data_dir='./data/character-1000',
-                        character_csv='./data/label_character.csv',
+
+# make folders for saving ckpt and examples
+if not os.path.exists(config.checkpoint_dir):
+    os.makedirs(config.checkpoint_dir)
+
+if not os.path.exists(config.example_dir):
+    os.makedirs(config.example_dir)
+
+# load dataset
+ds = CalligraphyDataset(data_dir=config.data_dir,
+                        character_csv=config.character_csv,
                         batch_size=config.batch_size,
                         shuffle=True,
                         repeat=False
                         )
 
+# initialize models
 generator = Generator()
 discriminator = Discriminator()
 class_embed = ClassEmbedding()
 
+# set `loss_obj` to Binary Cross Entropy
 loss_obj = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 
+# define loss functions for D and G
 def discriminator_loss(real, generated):
     real_loss = loss_obj(tf.ones_like(real), real)
     generated_loss = loss_obj(tf.zeros_like(generated), generated)
@@ -33,10 +45,12 @@ def generator_loss(generated):
     return loss_obj(tf.ones_like(generated), generated)
 
 
+# define optimizer
 discriminator_optimizer = tf.keras.optimizers.RMSprop(config.learning_rate_D)
 generator_optimizer = tf.keras.optimizers.Adam(config.learning_rate_G, beta_1=0.5)
 class_embed_optimizer = tf.keras.optimizers.Adam(config.learning_rate_G, beta_1=0.5)
 
+# define checkpoint manager
 checkpoint_prefix = os.path.join(config.checkpoint_dir, 'train')
 checkpoint = tf.train.Checkpoint(
     discriminator_optimizer=discriminator_optimizer,
@@ -152,6 +166,7 @@ def train():
                 duration = time.time() - start_time
                 examples_per_sec = config.batch_size / float(duration)
 
+                # TODO: Epochs number do not increase, sec/batch is not right, examples/sec is not right
                 print(
                     "Epochs: {:.2f} global_step: {} loss_D: {:.3g} loss_G: {:.3g} ({:.2f} examples/sec; {:.3f} sec/batch)".format(
                         epoch, global_step.numpy(), disc_loss, gen_loss, examples_per_sec, duration))
@@ -171,4 +186,5 @@ def train():
         print('Time taken for epoch {} is {} sec\n'.format(epoch + 1, time.time() - start_time))
 
 
+# start training
 train()

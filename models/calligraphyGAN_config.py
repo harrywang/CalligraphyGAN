@@ -14,8 +14,10 @@ class Config:
         self.class_embedding_dim = 128
         self.class_dim = 1000
         self.image_size = 224
-        self.checkpoint_dir = './checkpoints'
-        self.example_dir = 'example'
+        self.checkpoint_dir = './train/ckpt'
+        self.example_dir = './train/example'
+        self.data_dir = './data/character-1000'
+        self.character_csv = './data/label_character.csv'
 
 
 config = Config()

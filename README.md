@@ -108,9 +108,9 @@ and move files to `calligraphy.ai/data`. So, the directory tree should be:
 ...
 ```
 
-- Unzip the dataset
+- Unzip the dataset. Use `-O GBK` because the folder name is Chinese, and some OS cannot handle it correctly.  
 ```shell
-unzip chinese-calligraphy-1000.zip
+unzip -O GBK chinese-calligraphy-1000.zip
 ```
 
 Then
