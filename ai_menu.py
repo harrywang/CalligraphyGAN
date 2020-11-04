@@ -1,12 +1,9 @@
-# from model import CGAN
-from denoise import resize_and_denoise
-from style_transfer import Stylizer
+from utils.denoise import resize_and_denoise
+from utils.style_transfer import Stylizer
 import cv2
-from utils import words
-from bert_transformers import BertQuery
-from aestheic_filter import WhiteSpaceFilter
-from calligraphyGAN import CalligraphyGAN
-from calligraphyGAN_config import config
+from models.bert_transformers import BertQuery
+from models.calligraphyGAN import CalligraphyGAN
+import os
 
 
 class AIMenu:
@@ -14,16 +11,17 @@ class AIMenu:
     Wrap the whole AI Menu pipeline in this class.
     """
 
-    def __init__(self, result_path='./static/tmp'):
-        checkpoint_path = './ckpt/calligraphy-gan-3000/ckpt-11'
+    def __init__(self, result_path='./static/tmp', bert_model_path='./ckpt/transformers'):
+        checkpoint_path = './ckpt/calligraphy-gan/ckpt-11'
 
-        # self.cgan = CGAN()
         self.cgan = CalligraphyGAN()
         self.cgan.load_weights(checkpoint_path).expect_partial()
 
-        self.bcq = BertQuery(model_dir='./ckpt/transformers')
+        self.bcq = BertQuery(model_dir=bert_model_path, bq_result_path='./data/bq-result.npy')
         self.stylizer = Stylizer()
 
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
         self.result_path = result_path
 
     def get_topk_idx(self, description, topk=10):

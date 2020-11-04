@@ -120,8 +120,12 @@ ckpt/
 # results for web demo
 static/tmp/
 
-# data
-data/*.h5*
+# dataset
+dataset/
+cv/
+FID/
+example/
+evaluation/
 
 # static
 static/

@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 from tensorflow.keras import layers as layers
-from calligraphyGAN_config import config
+from models.calligraphyGAN_config import config
 
 
 class Conv(tf.keras.Model):
@@ -121,6 +121,9 @@ class Dense(tf.keras.Model):
 class ClassEmbedding(keras.Model):
     """
     Convert input class (one-hot) into a vector with the same size as z
+
+    Because there are too many characters in our dataset (we use 1000 characters),
+    using one-hot embedding to represent each character will waste space and time.
     """
     def __init__(self):
         super(ClassEmbedding, self).__init__()
